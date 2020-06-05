@@ -8,9 +8,9 @@
 }
 
 .cellUnknown {
-    fill: lightgray;
+    fill: rgb(226, 226, 226);
 }
 
 .cellFill {
-    fill: darkgray;
+    fill: rgb(87, 87, 87);
 }
