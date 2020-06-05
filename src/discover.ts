@@ -15,8 +15,8 @@ export class DiscoverThePicture {
             throw new Error(`Unable to find SVG element with ID: ${this.id}.`);
         }
         const svg = <SVGElement><any>element;
-        const width = svg.getAttribute("width");
-        const height = svg.getAttribute("height");
+        const width = (<any>svg)["viewBox"].baseVal.width;
+        const height = (<any>svg)["viewBox"].baseVal.height;
         if (width == null || height == null) {
             throw new Error(`SVG Element doesn't have a size.`);
         }
