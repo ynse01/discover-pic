@@ -20,8 +20,12 @@ export class Grid {
         this.cellWidth = (width - 2 * Grid.padding) / this.numCols;
         this.cellHeight = (height - 2 * Grid.padding) / this.numRows;
         this._content = [];
-        for (let i = 0; i < this.numRows; i++) {
-            this._content[i] = Array.from("12345678901234567890");
+        for (let y = 0; y < this.numRows; y++) {
+            this._content[y] = Array.from("12345678901234567890");
+            for (let x = 0; x < this.numCols; x++) {
+                const dummy = ((y * this.numCols) + x) % 3;
+                this.setStatus(x, y, <CellStatus>dummy);
+            }
         }
     }
 

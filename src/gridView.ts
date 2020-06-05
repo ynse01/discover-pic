@@ -36,7 +36,6 @@ export class GridView {
         const cell = document.getElementById(`cell-${x}-${y}`);
         if (cell !== null) {
             const status = this.grid.getStatus(x, y);
-            console.log(`Set status of (${x},${y}) to ${status}.`);
             switch(status) {
                 case CellStatus.Empty:
                     cell.setAttribute("class", "cellEmpty");
