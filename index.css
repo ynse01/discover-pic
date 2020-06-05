@@ -2,3 +2,15 @@
     stroke-width: 1px;
     stroke: black;
 }
+
+.cellEmpty {
+    fill: white;
+}
+
+.cellUnknown {
+    fill: lightgray;
+}
+
+.cellFill {
+    fill: darkgray;
+}
