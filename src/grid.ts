@@ -50,4 +50,23 @@ export class Grid {
         const index = (y * this.numCols) + x;
         this._status[index] = value;
     }
+
+    public toggleStatus(x: number, y: number): CellStatus {
+        const index = (y * this.numCols) + x;
+        const oldStatus = this._status[index];
+        let newStatus: CellStatus;
+        switch(oldStatus) {
+            case CellStatus.Unknown:
+                newStatus = CellStatus.Full;
+                break;
+            case CellStatus.Full:
+                newStatus = CellStatus.Empty;
+                break;
+            case CellStatus.Empty:
+                newStatus = CellStatus.Unknown;
+                break;
+        }
+        this._status[index] = newStatus;
+        return newStatus;
+    }
 }

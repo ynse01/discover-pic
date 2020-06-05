@@ -106,6 +106,7 @@ export class GridView {
     }
 
     private _onCellClick(x: number, y: number): void {
-        console.log(`Clicked on cell (${x}, ${y}).`);
+        this._grid.toggleStatus(x, y);
+        this._setCellStatus(x, y);
     }
 }
