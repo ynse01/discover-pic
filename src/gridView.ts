@@ -21,14 +21,16 @@ export class GridView {
             }
         }
         for (let y = 0; y <= this.grid.numRows; y++) {
-            const minX = Grid.padding;
-            const maxX = (this.grid.cellWidth * this.grid.numCols) + Grid.padding;
-            this.drawLine(minX, (y * this.grid.cellHeight) + Grid.padding, maxX, (y * this.grid.cellHeight) + Grid.padding, "gridLine");
+            const minX = this.grid.getXPos(0);
+            const maxX = this.grid.getXPos(this.grid.numCols);
+            const yPos = this.grid.getYPos(y);
+            this.drawLine(minX, yPos, maxX, yPos, "gridLine");
         }
         for (let x = 0; x <= this.grid.numCols; x++) {
-            const minY = Grid.padding;
-            const maxY = (this.grid.cellHeight * this.grid.numRows) + Grid.padding;
-            this.drawLine((x * this.grid.cellWidth) + Grid.padding, minY, (x * this.grid.cellWidth) + Grid.padding, maxY, "gridLine");
+            const minY = this.grid.getYPos(0);
+            const maxY = this.grid.getYPos(this.grid.numRows);
+            const xPos = this.grid.getXPos(x);
+            this.drawLine(xPos, minY, xPos, maxY, "gridLine");
         }
     }
 
@@ -71,8 +73,8 @@ export class GridView {
 
     private drawCell(x: number, y: number): void {
         const rect = document.createElementNS(GridView.svgNS, "rect");
-        const xPos = (x * this.grid.cellWidth) + Grid.padding;
-        const yPos = (y * this.grid.cellHeight) + Grid.padding;
+        const xPos = this.grid.getXPos(x);
+        const yPos = this.grid.getYPos(y);
         rect.setAttribute("x", `${xPos}`);
         rect.setAttribute("y", `${yPos}`);
         rect.setAttribute("width", `${this.grid.cellWidth}`);

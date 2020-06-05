@@ -29,6 +29,14 @@ export class Grid {
         }
     }
 
+    public getXPos(x: number): number {
+        return (x * this.cellWidth) + Grid.padding;
+    }
+
+    public getYPos(y: number): number {
+        return (y * this.cellHeight) + Grid.padding;
+    }
+
     public getContent(x: number, y: number): string {
         return this._content[y][x];
     }
