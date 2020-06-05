@@ -16,8 +16,9 @@
 }
 
 .cursor {
-    stroke: purple;
+    stroke: red;
     stroke-width: 3px;
+    fill: transparent;
 }
 
 .cursorHide {

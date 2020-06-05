@@ -1,5 +1,6 @@
 import { Grid } from "./grid.js";
 import { GridView } from "./gridView.js";
+import { Cursor } from "./cursor.js";
 
 export class DiscoverThePicture {
     private _id: string;
@@ -22,6 +23,7 @@ export class DiscoverThePicture {
         }
         this._grid = new Grid(width, height);
         new GridView(svg, this._grid);
+        new Cursor(svg, this._grid);
     }
 
 }
