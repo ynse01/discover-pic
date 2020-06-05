@@ -10,6 +10,7 @@ export class GridView {
         this._svg = svg;
         this._grid = grid;
         this.drawGrid();
+        this._grid.registerChangeHandler(this._onCellChanged.bind(this));
     }
 
     private drawGrid(): void {
@@ -108,5 +109,10 @@ export class GridView {
     private _onCellClick(x: number, y: number): void {
         this._grid.toggleStatus(x, y);
         this._setCellStatus(x, y);
+    }
+
+    private _onCellChanged(x: number, y: number): void {
+        this._setCellStatus(x, y);
+        this._setCellContent(x, y);
     }
 }

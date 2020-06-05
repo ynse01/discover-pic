@@ -76,6 +76,8 @@ export class Cursor {
                 }
                 break;
             case " ":
+                // For now, toggle the center cell.
+                this._grid.toggleStatus(this._xPos + 1, this._yPos + 1);
                 break;
         }
         this._moveCursor();

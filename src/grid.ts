@@ -13,6 +13,7 @@ export class Grid {
     public static readonly padding = 5;
     private _content: string[][];
     private _status: CellStatus[] = [];
+    private _cellChangedHandler: ((x: number, y: number) => void) | undefined ; 
 
     constructor(width: number, height: number) {
         this.numCols = 20;
@@ -49,6 +50,9 @@ export class Grid {
     public setStatus(x: number, y: number, value: CellStatus): void {
         const index = (y * this.numCols) + x;
         this._status[index] = value;
+        if (this._cellChangedHandler !== undefined) {
+            this._cellChangedHandler(x, y);
+        }
     }
 
     public toggleStatus(x: number, y: number): CellStatus {
@@ -67,6 +71,13 @@ export class Grid {
                 break;
         }
         this._status[index] = newStatus;
-        return newStatus;
+        if (this._cellChangedHandler !== undefined) {
+            this._cellChangedHandler(x, y);
+        }
+       return newStatus;
+    }
+
+    public registerChangeHandler(handler: (x: number, y: number) => void) {
+        this._cellChangedHandler = handler;
     }
 }
