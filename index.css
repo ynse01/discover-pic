@@ -11,6 +11,15 @@
     fill: rgb(226, 226, 226);
 }
 
-.cellFill {
+.cellFull {
     fill: rgb(87, 87, 87);
+}
+
+.cursor {
+    stroke: purple;
+    stroke-width: 3px;
+}
+
+.cursorHide {
+    visibility: hidden;
 }
