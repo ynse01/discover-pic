@@ -36,6 +36,33 @@ export class Grid {
     setStatus(x, y, value) {
         const index = (y * this.numCols) + x;
         this._status[index] = value;
+        if (this._cellChangedHandler !== undefined) {
+            this._cellChangedHandler(x, y);
+        }
+    }
+    toggleStatus(x, y) {
+        const index = (y * this.numCols) + x;
+        const oldStatus = this._status[index];
+        let newStatus;
+        switch (oldStatus) {
+            case CellStatus.Unknown:
+                newStatus = CellStatus.Full;
+                break;
+            case CellStatus.Full:
+                newStatus = CellStatus.Empty;
+                break;
+            case CellStatus.Empty:
+                newStatus = CellStatus.Unknown;
+                break;
+        }
+        this._status[index] = newStatus;
+        if (this._cellChangedHandler !== undefined) {
+            this._cellChangedHandler(x, y);
+        }
+        return newStatus;
+    }
+    registerChangeHandler(handler) {
+        this._cellChangedHandler = handler;
     }
 }
 Grid.padding = 5;

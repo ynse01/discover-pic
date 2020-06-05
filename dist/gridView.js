@@ -4,6 +4,7 @@ export class GridView {
         this._svg = svg;
         this._grid = grid;
         this.drawGrid();
+        this._grid.registerChangeHandler(this._onCellChanged.bind(this));
     }
     drawGrid() {
         for (let y = 0; y < this._grid.numRows; y++) {
@@ -69,6 +70,7 @@ export class GridView {
         rect.setAttribute("width", `${this._grid.cellWidth}`);
         rect.setAttribute("height", `${this._grid.cellHeight}`);
         rect.setAttribute("id", `cell-${x}-${y}`);
+        rect.onclick = this._onMouseClick.bind(this);
         this._svg.appendChild(rect);
         const text = document.createElementNS(GridView.svgNS, "text");
         text.setAttribute("x", `${xPos + (this._grid.cellWidth / 2)}`);
@@ -77,9 +79,27 @@ export class GridView {
         text.setAttribute('text-anchor', "middle");
         text.setAttribute("fill", "black");
         text.setAttribute("id", `text-${x}-${y}`);
+        text.setAttribute("pointer-events", "none");
         const node = document.createTextNode(" ");
         text.appendChild(node);
         this._svg.appendChild(text);
+    }
+    _onMouseClick(e) {
+        const cell = e.target;
+        if (cell !== null) {
+            const parts = cell.id.split("-");
+            if (parts.length > 2 && parts[0] === "cell") {
+                this._onCellClick(parseInt(parts[1]), parseInt(parts[2]));
+            }
+        }
+    }
+    _onCellClick(x, y) {
+        this._grid.toggleStatus(x, y);
+        this._setCellStatus(x, y);
+    }
+    _onCellChanged(x, y) {
+        this._setCellStatus(x, y);
+        this._setCellContent(x, y);
     }
 }
 GridView.svgNS = 'http://www.w3.org/2000/svg';
