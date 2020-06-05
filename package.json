@@ -1,0 +1,15 @@
+{
+  "name": "discover-pic",
+  "version": "1.0.0",
+  "description": "Discover the picture",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ynse Hoornenborg",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^3.9.5"
+  }
+}
