@@ -30,21 +30,20 @@ export class DiscoverThePicture {
         console.log(`Width of cell ${cellWidth}`);
         console.log(`Height of cell ${cellHeight}`);
         for (let y = 0; y <= numRows; y++) {
-            this.drawLine(grid, padding, (y * cellHeight) + padding, (cellWidth * numCols) + padding, (y * cellHeight) + padding, "black");
+            this.drawLine(grid, padding, (y * cellHeight) + padding, (cellWidth * numCols) + padding, (y * cellHeight) + padding, "gridLine");
         }
         for (let x = 0; x <= numCols; x++) {
-            this.drawLine(grid, (x * cellWidth) + padding, padding, (x * cellWidth) + padding, (cellHeight * numRows) + padding, "black");
+            this.drawLine(grid, (x * cellWidth) + padding, padding, (x * cellWidth) + padding, (cellHeight * numRows) + padding, "gridLine");
         }
     }
 
-    private drawLine(grid: SVGElement, x1: number, y1: number, x2: number, y2: number, color: string, thickness: number = 1): void {
+    private drawLine(grid: SVGElement, x1: number, y1: number, x2: number, y2: number, cssClass: string): void {
         const line = document.createElementNS(DiscoverThePicture.svgNS, "line");
         line.setAttribute("x1", `${x1}`);
         line.setAttribute("x2", `${x2}`);
         line.setAttribute("y1", `${y1}`);
         line.setAttribute("y2", `${y2}`);
-        line.style.stroke = color;
-        line.style.strokeWidth = `${thickness}`;
+        line.setAttribute("class", cssClass);
         grid.appendChild(line);
         console.log("Line appended");
     }
