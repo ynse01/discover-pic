@@ -27,13 +27,15 @@ export class DiscoverThePicture {
         }
         const cellWidth = (parseInt(width) - 2 * padding) / numCols;
         const cellHeight = (parseInt(height) - 2 * padding) / numRows;
-        console.log(`Width of cell ${cellWidth}`);
-        console.log(`Height of cell ${cellHeight}`);
         for (let y = 0; y <= numRows; y++) {
-            this.drawLine(grid, padding, (y * cellHeight) + padding, (cellWidth * numCols) + padding, (y * cellHeight) + padding, "gridLine");
+            const minX = padding;
+            const maxX = (cellWidth * numCols) + padding;
+            this.drawLine(grid, minX, (y * cellHeight) + padding, maxX, (y * cellHeight) + padding, "gridLine");
         }
         for (let x = 0; x <= numCols; x++) {
-            this.drawLine(grid, (x * cellWidth) + padding, padding, (x * cellWidth) + padding, (cellHeight * numRows) + padding, "gridLine");
+            const minY = padding;
+            const maxY = (cellHeight * numRows) + padding;
+            this.drawLine(grid, (x * cellWidth) + padding, minY, (x * cellWidth) + padding, maxY, "gridLine");
         }
     }
 
@@ -45,7 +47,6 @@ export class DiscoverThePicture {
         line.setAttribute("y2", `${y2}`);
         line.setAttribute("class", cssClass);
         grid.appendChild(line);
-        console.log("Line appended");
     }
 }
 // Let HTML page easiliy access this class.
