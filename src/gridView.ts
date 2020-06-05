@@ -15,26 +15,26 @@ export class GridView {
     private drawGrid(): void {
         for (let y = 0; y < this._grid.numRows; y++) {
             for (let x = 0; x < this._grid.numCols; x++) {
-                this.drawCell(x, y);
-                this.setCellStatus(x, y);
-                this.setCellContent(x, y);
+                this._drawCell(x, y);
+                this._setCellStatus(x, y);
+                this._setCellContent(x, y);
             }
         }
         for (let y = 0; y <= this._grid.numRows; y++) {
             const minX = this._grid.getXPos(0);
             const maxX = this._grid.getXPos(this._grid.numCols);
             const yPos = this._grid.getYPos(y);
-            this.drawLine(minX, yPos, maxX, yPos, "gridLine");
+            this._drawLine(minX, yPos, maxX, yPos, "gridLine");
         }
         for (let x = 0; x <= this._grid.numCols; x++) {
             const minY = this._grid.getYPos(0);
             const maxY = this._grid.getYPos(this._grid.numRows);
             const xPos = this._grid.getXPos(x);
-            this.drawLine(xPos, minY, xPos, maxY, "gridLine");
+            this._drawLine(xPos, minY, xPos, maxY, "gridLine");
         }
     }
 
-    public setCellStatus(x: number, y: number) {
+    private _setCellStatus(x: number, y: number) {
         const cell = document.getElementById(`cell-${x}-${y}`);
         if (cell !== null) {
             const status = this._grid.getStatus(x, y);
@@ -53,7 +53,7 @@ export class GridView {
         }
     }
 
-    private setCellContent(x: number, y: number) {
+    private _setCellContent(x: number, y: number) {
         const cell = document.getElementById(`text-${x}-${y}`);
         if (cell !== null) {
             const content = this._grid.getContent(x, y);
@@ -61,7 +61,7 @@ export class GridView {
         }
     }
 
-    private drawLine(x1: number, y1: number, x2: number, y2: number, cssClass: string): void {
+    private _drawLine(x1: number, y1: number, x2: number, y2: number, cssClass: string): void {
         const line = document.createElementNS(GridView.svgNS, "line");
         line.setAttribute("x1", `${x1}`);
         line.setAttribute("x2", `${x2}`);
@@ -71,7 +71,7 @@ export class GridView {
         this._svg.appendChild(line);
     }
 
-    private drawCell(x: number, y: number): void {
+    private _drawCell(x: number, y: number): void {
         const rect = document.createElementNS(GridView.svgNS, "rect");
         const xPos = this._grid.getXPos(x);
         const yPos = this._grid.getYPos(y);
