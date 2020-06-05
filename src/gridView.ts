@@ -80,6 +80,7 @@ export class GridView {
         rect.setAttribute("width", `${this._grid.cellWidth}`);
         rect.setAttribute("height", `${this._grid.cellHeight}`);
         rect.setAttribute("id", `cell-${x}-${y}`);
+        rect.onclick = this._onMouseClick.bind(this);
         this._svg.appendChild(rect);
         const text = document.createElementNS(GridView.svgNS, "text");
         text.setAttribute("x", `${xPos + (this._grid.cellWidth / 2)}`);
@@ -88,8 +89,23 @@ export class GridView {
         text.setAttribute('text-anchor', "middle")
         text.setAttribute("fill", "black");
         text.setAttribute("id", `text-${x}-${y}`);
+        text.setAttribute("pointer-events", "none");
         const node = document.createTextNode(" ");
         text.appendChild(node);
         this._svg.appendChild(text);
+    }
+
+    private _onMouseClick(e: MouseEvent): any {
+        const cell = e.target as SVGRectElement;
+        if (cell !== null) {
+            const parts = cell.id.split("-");
+            if (parts.length > 2 && parts[0] === "cell") {
+                this._onCellClick(parseInt(parts[1]), parseInt(parts[2]));
+            }
+        }
+    }
+
+    private _onCellClick(x: number, y: number): void {
+        console.log(`Clicked on cell (${x}, ${y}).`);
     }
 }

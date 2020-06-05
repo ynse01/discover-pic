@@ -32,6 +32,7 @@ export class Cursor {
         cursor.setAttribute("height", `${this._grid.cellHeight * 3}`);
         cursor.setAttribute("id", "cursor");
         cursor.setAttribute("class", "cursor");
+        cursor.setAttribute("pointer-events", "none");
         return <SVGRectElement><any>cursor;
     }
 
