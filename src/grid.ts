@@ -40,6 +40,27 @@ export class Grid {
         }
     }
 
+    public setCellEmpty(x: number, y: number) {
+        const cell = document.getElementById(`cell-${x}-${y}`);
+        if (cell !== null) {
+            cell.setAttribute("class", "cellEmpty");
+        }
+    }
+
+    public setCellFill(x: number, y: number) {
+        const cell = document.getElementById(`cell-${x}-${y}`);
+        if (cell !== null) {
+            cell.setAttribute("class", "cellFill");
+        }
+    }
+
+    public setCellUnknown(x: number, y: number) {
+        const cell = document.getElementById(`cell-${x}-${y}`);
+        if (cell !== null) {
+            cell.setAttribute("class", "cellUnknown");
+        }
+    }
+
     private drawLine(x1: number, y1: number, x2: number, y2: number, cssClass: string): void {
         const line = document.createElementNS(Grid.svgNS, "line");
         line.setAttribute("x1", `${x1}`);
@@ -56,6 +77,7 @@ export class Grid {
         rect.setAttribute("y", `${(y * this.cellHeight) + Grid.padding}`);
         rect.setAttribute("width", `${this.cellWidth}`);
         rect.setAttribute("height", `${this.cellHeight}`);
+        rect.setAttribute("id", `cell-${x}-${y}`);
         rect.setAttribute("class", "cellUnknown");
         this.svg.appendChild(rect);
     }
