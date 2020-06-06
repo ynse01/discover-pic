@@ -25,8 +25,7 @@ export class Grid {
         for (let y = 0; y < this.numRows; y++) {
             this._content[y] = Array.from(rows[y]);
             for (let x = 0; x < this.numCols; x++) {
-                const dummy = ((y * this.numCols) + x) % 3;
-                this.setStatus(x, y, <CellStatus>dummy);
+                this.setStatus(x, y, CellStatus.Unknown);
             }
         }
     }

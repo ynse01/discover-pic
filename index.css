@@ -3,11 +3,11 @@
     stroke: black;
 }
 
-.cellEmpty {
+.cellUnknown {
     fill: white;
 }
 
-.cellUnknown {
+.cellEmpty {
     fill: rgb(226, 226, 226);
 }
 
