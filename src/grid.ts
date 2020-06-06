@@ -15,14 +15,15 @@ export class Grid {
     private _status: CellStatus[] = [];
     private _cellChangedHandler: ((x: number, y: number) => void) | undefined ; 
 
-    constructor(width: number, height: number) {
-        this.numCols = 20;
-        this.numRows = 20;
+    constructor(width: number, height: number, puzzle: any) {
+        this.numCols = puzzle["numCols"];
+        this.numRows = puzzle["numRows"];
         this.cellWidth = (width - 2 * Grid.padding) / this.numCols;
         this.cellHeight = (height - 2 * Grid.padding) / this.numRows;
         this._content = [];
+        const rows = <string[]>puzzle["rows"];
         for (let y = 0; y < this.numRows; y++) {
-            this._content[y] = Array.from("12345678901234567890");
+            this._content[y] = Array.from(rows[y]);
             for (let x = 0; x < this.numCols; x++) {
                 const dummy = ((y * this.numCols) + x) % 3;
                 this.setStatus(x, y, <CellStatus>dummy);
