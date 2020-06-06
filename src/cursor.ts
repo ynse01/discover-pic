@@ -1,4 +1,4 @@
-import { Grid } from "./grid.js";
+import { Grid, CellStatus } from "./grid.js";
 import { GridView } from "./gridView.js";
 
 export class Cursor {
@@ -76,16 +76,31 @@ export class Cursor {
                 }
                 break;
             case " ":
-                this._apply(this._xPos, this._yPos);
+                this._apply();
                 break;
         }
         this._moveCursor();
     }
 
-    private _apply(x: number, y: number): void {
-        const hint = this._grid.getContent(x, y);
+    private _apply(): void {
+        const hint = this._grid.getContent(this._xPos, this._yPos);
         if (hint !== " ") {
-            this._grid.toggleStatus(x, y);
+            switch(hint) {
+                case "0":
+                    this._settAllCells(CellStatus.Empty);
+                    break;
+                case "9":
+                    this._settAllCells(CellStatus.Full);
+                    break;
+            }
+        }
+    }
+
+    private _settAllCells(status: CellStatus) {
+        for (let y = -1; y <= 1; y++) {
+            for(let x = -1; x <= 1; x++) {
+                this._grid.setStatus(this._xPos + x, this._yPos + y, status);
+            }
         }
     }
 }
