@@ -13,6 +13,7 @@ export class Grid {
     public static readonly padding = 5;
     private _hints: string[][];
     private _status: CellStatus[] = [];
+    private _applied: boolean[] = [];
     private _cellChangedHandler: ((x: number, y: number) => void) | undefined ; 
 
     constructor(width: number, height: number, puzzle: any) {
@@ -26,6 +27,7 @@ export class Grid {
             this._hints[y] = Array.from(rows[y]);
             for (let x = 0; x < this.numCols; x++) {
                 this.setStatus(x, y, CellStatus.Unknown);
+                this.setApplied(x, y, false);
             }
         }
     }
@@ -55,6 +57,25 @@ export class Grid {
         if (this.inRange(x, y)) {
             const index = (y * this.numCols) + x;
             this._status[index] = value;
+            if (this._cellChangedHandler !== undefined) {
+                this._cellChangedHandler(x, y);
+            }
+        }
+    }
+
+    public getApplied(x: number, y: number): boolean {
+        let isApplied = false;
+        if (this.inRange(x, y)) {
+            const index = (y * this.numCols) + x;
+            isApplied = this._applied[index];
+        }
+        return isApplied;
+    }
+
+    public setApplied(x: number, y: number, applied: boolean = true): void {
+        if (this.inRange(x, y)) {
+            const index = (y * this.numCols) + x;
+            this._applied[index] = applied;
             if (this._cellChangedHandler !== undefined) {
                 this._cellChangedHandler(x, y);
             }

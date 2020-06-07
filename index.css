@@ -24,12 +24,6 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.hintEmptyApplied {
-    fill: rgb(87, 87, 87);
-    font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
 .crossEmpty {
     visibility: visible;
     stroke: rgb(186, 186, 186);
@@ -46,14 +40,12 @@
     font-family: Arial, Helvetica, sans-serif;
 }
 
-.hintFullApplied {
-    fill: rgb(87, 87, 87);
-    font-weight: bold;
-    font-family: Arial, Helvetica, sans-serif;
-}
-
 .crossFull {
     visibility: hidden;
+}
+
+.applied {
+    fill: rgb(97, 97, 97);
 }
 
 .cursor {

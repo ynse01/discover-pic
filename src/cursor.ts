@@ -78,7 +78,9 @@ export class Cursor {
                 break;
             case " ":
                 const solver = new MicroSolver(this._grid, this._xPos, this._yPos);
-                solver.applyHint();
+                if (solver.applyHint()) {
+                    this._grid.setApplied(this._xPos, this._yPos);
+                }
                 break;
         }
         this._moveCursor();

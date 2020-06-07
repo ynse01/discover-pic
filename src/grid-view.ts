@@ -56,6 +56,18 @@ export class GridView {
         }
     }
 
+    private _setCellApplied(x: number, y: number) {
+        const cell = document.getElementById(`hint-${x}-${y}`);
+        if (cell !== null) {
+            const isApplied = this._grid.getApplied(x, y);
+            if (isApplied) {
+                cell.classList.add("applied");
+            } else {
+                cell.classList.remove("applied");
+            }
+        }
+    }
+
     private _setCellContent(x: number, y: number) {
         const cell = document.getElementById(`hint-${x}-${y}`);
         if (cell !== null) {
@@ -140,5 +152,6 @@ export class GridView {
     private _onCellChanged(x: number, y: number): void {
         this._setCellStatus(x, y);
         this._setCellContent(x, y);
+        this._setCellApplied(x, y);
     }
 }
