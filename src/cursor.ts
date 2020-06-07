@@ -1,5 +1,5 @@
 import { Grid, CellStatus } from "./grid.js";
-import { GridView } from "./gridView.js";
+import { GridView } from "./grid-view.js";
 
 export class Cursor {
     private _cursor: SVGRectElement;
