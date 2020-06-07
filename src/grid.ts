@@ -43,18 +43,26 @@ export class Grid {
     }
 
     public getStatus(x: number, y: number): CellStatus {
-        const index = (y * this.numCols) + x;
-        return this._status[index];
+        let status = CellStatus.Empty;
+        if (this.inRange(x, y)) {
+            const index = (y * this.numCols) + x;
+            status = this._status[index];
+        }
+        return status;
     }
 
     public setStatus(x: number, y: number, value: CellStatus): void {
-        if (x >= 0 && x < this.numCols && y >= 0 && y < this.numRows) {
+        if (this.inRange(x, y)) {
             const index = (y * this.numCols) + x;
             this._status[index] = value;
             if (this._cellChangedHandler !== undefined) {
                 this._cellChangedHandler(x, y);
             }
         }
+    }
+
+    public inRange(x: number, y: number): boolean {
+        return x >= 0 && x < this.numCols && y >= 0 && y < this.numRows;
     }
 
     public toggleStatus(x: number, y: number): CellStatus {
