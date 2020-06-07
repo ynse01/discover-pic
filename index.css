@@ -1,6 +1,6 @@
 .cellUnknown {
     fill: white;
-    stroke: black;
+    stroke: rgb(87, 87, 87);;
 }
 
 .hintUnknown {
@@ -11,7 +11,7 @@
 
 .cellEmpty {
     fill: rgb(226, 226, 226);
-    stroke: black;
+    stroke: rgb(87, 87, 87);;
 }
 
 .hintEmpty {
@@ -28,7 +28,7 @@
 
 .cellFull {
     fill: black;
-    stroke: rgb(226, 226, 226);
+    stroke: rgb(87, 87, 87);;
 }
 
 .hintFull {
