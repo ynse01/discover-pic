@@ -65,7 +65,7 @@ export class MicroSolver {
                     isApplied = true;
                 }
                 if (!isApplied) {
-                    console.log(`Not applied, hint ${hintNumber} with ${stats.toString()}.`);
+                    console.log(`Not applied, hint ${hintNumber} with stats ${stats.toString()}.`);
                 }
                 break;
             default:
