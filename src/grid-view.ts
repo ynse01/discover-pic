@@ -5,6 +5,8 @@ export class GridView {
     private _grid: Grid;
 
     public static readonly svgNS = 'http://www.w3.org/2000/svg';
+    private static readonly fontSizeFactor = 0.8;
+    private static readonly fontBaselineFactor = 0.75;
 
     constructor(svg: SVGElement, grid: Grid) {
         this._svg = svg;
@@ -68,8 +70,8 @@ export class GridView {
         this._svg.appendChild(rect);
         const text = document.createElementNS(GridView.svgNS, "text");
         text.setAttribute("x", `${xPos + (this._grid.cellWidth / 2)}`);
-        text.setAttribute("y", `${yPos + (this._grid.cellHeight * 0.80)}`);
-        text.setAttribute("font-size", `${this._grid.cellHeight * 0.9}`);
+        text.setAttribute("y", `${yPos + (this._grid.cellHeight * GridView.fontBaselineFactor)}`);
+        text.setAttribute("font-size", `${this._grid.cellHeight * GridView.fontSizeFactor}`);
         text.setAttribute('text-anchor', "middle")
         text.setAttribute("fill", "black");
         rect.setAttribute("class", "textUnknown");
