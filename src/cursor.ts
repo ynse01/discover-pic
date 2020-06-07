@@ -1,5 +1,6 @@
-import { Grid, CellStatus } from "./grid.js";
+import { Grid } from "./grid.js";
 import { GridView } from "./grid-view.js";
+import { MicroSolver } from "./micro-solver.js";
 
 export class Cursor {
     private _cursor: SVGRectElement;
@@ -76,32 +77,10 @@ export class Cursor {
                 }
                 break;
             case " ":
-                this._apply();
+                const solver = new MicroSolver(this._grid, this._xPos, this._yPos);
+                solver.applyHint();
                 break;
         }
         this._moveCursor();
-    }
-
-    private _apply(): void {
-        const hint = this._grid.getHint(this._xPos, this._yPos);
-        switch(hint) {
-            case "0":
-                this._settAllCells(CellStatus.Empty);
-                break;
-            case "9":
-                this._settAllCells(CellStatus.Full);
-                break;
-            default:
-                // Do nothing.
-                break;
-        }
-    }
-
-    private _settAllCells(status: CellStatus) {
-        for (let y = -1; y <= 1; y++) {
-            for(let x = -1; x <= 1; x++) {
-                this._grid.setStatus(this._xPos + x, this._yPos + y, status);
-            }
-        }
     }
 }
