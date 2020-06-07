@@ -1,18 +1,46 @@
-.gridLine {
-    stroke-width: 1px;
+.cellUnknown {
+    fill: white;
     stroke: black;
 }
 
-.cellUnknown {
-    fill: white;
+.hintUnknown {
+    fill: black;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .cellEmpty {
     fill: rgb(226, 226, 226);
+    stroke: black;
+}
+
+.hintEmpty {
+    fill: black;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.hintEmptyApplied {
+    fill: rgb(87, 87, 87);
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .cellFull {
+    fill: black;
+    stroke: rgb(226, 226, 226);
+}
+
+.hintFull {
+    fill: white;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.hintFullApplied {
     fill: rgb(87, 87, 87);
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 .cursor {

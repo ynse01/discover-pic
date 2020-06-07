@@ -21,55 +21,37 @@ export class GridView {
                 this._setCellContent(x, y);
             }
         }
-        for (let y = 0; y <= this._grid.numRows; y++) {
-            const minX = this._grid.getXPos(0);
-            const maxX = this._grid.getXPos(this._grid.numCols);
-            const yPos = this._grid.getYPos(y);
-            this._drawLine(minX, yPos, maxX, yPos, "gridLine");
-        }
-        for (let x = 0; x <= this._grid.numCols; x++) {
-            const minY = this._grid.getYPos(0);
-            const maxY = this._grid.getYPos(this._grid.numRows);
-            const xPos = this._grid.getXPos(x);
-            this._drawLine(xPos, minY, xPos, maxY, "gridLine");
-        }
     }
 
     private _setCellStatus(x: number, y: number) {
         const cell = document.getElementById(`cell-${x}-${y}`);
-        if (cell !== null) {
+        const hint = document.getElementById(`hint-${x}-${y}`);
+        if (cell !== null && hint !== null) {
             const status = this._grid.getStatus(x, y);
             switch(status) {
                 case CellStatus.Empty:
                     cell.setAttribute("class", "cellEmpty");
+                    hint.setAttribute("class", "hintEmpty");
                     break;
                 case CellStatus.Full:
                     cell.setAttribute("class", "cellFull");
+                    hint.setAttribute("class", "hintFull");
                     break;
                 case CellStatus.Unknown:
                 default:
                     cell.setAttribute("class", "cellUnknown");
+                    hint.setAttribute("class", "hintUnknown");
                     break;
             }
         }
     }
 
     private _setCellContent(x: number, y: number) {
-        const cell = document.getElementById(`text-${x}-${y}`);
+        const cell = document.getElementById(`hint-${x}-${y}`);
         if (cell !== null) {
             const hint = this._grid.getHint(x, y);
             cell.textContent = hint;
         }
-    }
-
-    private _drawLine(x1: number, y1: number, x2: number, y2: number, cssClass: string): void {
-        const line = document.createElementNS(GridView.svgNS, "line");
-        line.setAttribute("x1", `${x1}`);
-        line.setAttribute("x2", `${x2}`);
-        line.setAttribute("y1", `${y1}`);
-        line.setAttribute("y2", `${y2}`);
-        line.setAttribute("class", cssClass);
-        this._svg.appendChild(line);
     }
 
     private _drawCell(x: number, y: number): void {
@@ -80,16 +62,18 @@ export class GridView {
         rect.setAttribute("y", `${yPos}`);
         rect.setAttribute("width", `${this._grid.cellWidth}`);
         rect.setAttribute("height", `${this._grid.cellHeight}`);
+        rect.setAttribute("class", "cellUnknown");
         rect.setAttribute("id", `cell-${x}-${y}`);
         rect.onclick = this._onMouseClick.bind(this);
         this._svg.appendChild(rect);
         const text = document.createElementNS(GridView.svgNS, "text");
         text.setAttribute("x", `${xPos + (this._grid.cellWidth / 2)}`);
-        text.setAttribute("y", `${yPos + (this._grid.cellHeight * 0.85)}`);
-        text.setAttribute("font-size", `${this._grid.cellHeight}`);
+        text.setAttribute("y", `${yPos + (this._grid.cellHeight * 0.80)}`);
+        text.setAttribute("font-size", `${this._grid.cellHeight * 0.9}`);
         text.setAttribute('text-anchor', "middle")
         text.setAttribute("fill", "black");
-        text.setAttribute("id", `text-${x}-${y}`);
+        rect.setAttribute("class", "textUnknown");
+        text.setAttribute("id", `hint-${x}-${y}`);
         text.setAttribute("pointer-events", "none");
         const node = document.createTextNode(" ");
         text.appendChild(node);
