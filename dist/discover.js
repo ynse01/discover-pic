@@ -1,5 +1,5 @@
 import { Grid } from "./grid.js";
-import { GridView } from "./gridView.js";
+import { GridView } from "./grid-view.js";
 import { Cursor } from "./cursor.js";
 export class DiscoverThePicture {
     constructor(gridId) {

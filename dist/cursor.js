@@ -1,5 +1,5 @@
-import { CellStatus } from "./grid.js";
-import { GridView } from "./gridView.js";
+import { GridView } from "./grid-view.js";
+import { MicroSolver } from "./micro-solver.js";
 export class Cursor {
     constructor(svg, grid) {
         this._xPos = 1;
@@ -65,30 +65,13 @@ export class Cursor {
                 }
                 break;
             case " ":
-                this._apply();
+                const solver = new MicroSolver(this._grid, this._xPos, this._yPos);
+                if (solver.applyHint()) {
+                    this._grid.setApplied(this._xPos, this._yPos);
+                }
                 break;
         }
         this._moveCursor();
-    }
-    _apply() {
-        const hint = this._grid.getContent(this._xPos, this._yPos);
-        if (hint !== " ") {
-            switch (hint) {
-                case "0":
-                    this._settAllCells(CellStatus.Empty);
-                    break;
-                case "9":
-                    this._settAllCells(CellStatus.Full);
-                    break;
-            }
-        }
-    }
-    _settAllCells(status) {
-        for (let y = -1; y <= 1; y++) {
-            for (let x = -1; x <= 1; x++) {
-                this._grid.setStatus(this._xPos + x, this._yPos + y, status);
-            }
-        }
     }
 }
 //# sourceMappingURL=cursor.js.map
