@@ -48,10 +48,12 @@ export class Grid {
     }
 
     public setStatus(x: number, y: number, value: CellStatus): void {
-        const index = (y * this.numCols) + x;
-        this._status[index] = value;
-        if (this._cellChangedHandler !== undefined) {
-            this._cellChangedHandler(x, y);
+        if (x >= 0 && x < this.numCols && y >= 0 && y < this.numRows) {
+            const index = (y * this.numCols) + x;
+            this._status[index] = value;
+            if (this._cellChangedHandler !== undefined) {
+                this._cellChangedHandler(x, y);
+            }
         }
     }
 
