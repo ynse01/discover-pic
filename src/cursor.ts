@@ -79,7 +79,7 @@ export class Cursor {
             case " ":
                 const solver = new MicroSolver(this._grid, this._xPos, this._yPos);
                 if (solver.applyHint()) {
-                    this._grid.setApplied(this._xPos, this._yPos);
+                    this._grid.getCell(this._xPos, this._yPos)!.applied = true;
                 }
                 break;
         }

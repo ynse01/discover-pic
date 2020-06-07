@@ -1,4 +1,5 @@
 import { CellStatus, Grid } from "./grid.js";
+import { GridCell } from "./grid-cell.js";
 
 export class GridView {
     private _svg: SVGElement;
@@ -18,36 +19,39 @@ export class GridView {
     private drawGrid(): void {
         for (let y = 0; y < this._grid.numRows; y++) {
             for (let x = 0; x < this._grid.numCols; x++) {
-                this._drawCell(x, y);
-                this._setCellStatus(x, y);
-                this._setCellContent(x, y);
+                const cell = this._grid.getCell(x, y);
+                if (cell !== undefined) {
+                    this._drawCell(x, y);
+                    this._updateCellStatus(cell);
+                    this._updateCellContent(cell);
+                }
             }
         }
     }
 
-    private _setCellStatus(x: number, y: number) {
-        const cell = document.getElementById(`cell-${x}-${y}`);
-        const hint = document.getElementById(`hint-${x}-${y}`);
-        const crossUp = document.getElementById(`crossup-${x}-${y}`);
-        const crossDown = document.getElementById(`crossdown-${x}-${y}`);
-        if (cell !== null && hint !== null && crossUp !== null && crossDown !== null) {
-            const status = this._grid.getStatus(x, y);
+    private _updateCellStatus(cell: GridCell) {
+        const rect = document.getElementById(`cell-${cell.x}-${cell.y}`);
+        const hint = document.getElementById(`hint-${cell.x}-${cell.y}`);
+        const crossUp = document.getElementById(`crossup-${cell.x}-${cell.y}`);
+        const crossDown = document.getElementById(`crossdown-${cell.x}-${cell.y}`);
+        if (rect !== null && hint !== null && crossUp !== null && crossDown !== null) {
+            const status = cell.status;
             switch(status) {
                 case CellStatus.Empty:
-                    cell.setAttribute("class", "cellEmpty");
+                    rect.setAttribute("class", "cellEmpty");
                     hint.setAttribute("class", "hintEmpty");
                     crossUp.setAttribute("class", "crossEmpty");
                     crossDown.setAttribute("class", "crossEmpty");
                     break;
                 case CellStatus.Full:
-                    cell.setAttribute("class", "cellFull");
+                    rect.setAttribute("class", "cellFull");
                     hint.setAttribute("class", "hintFull");
                     crossUp.setAttribute("class", "crossFull");
                     crossDown.setAttribute("class", "crossFull");
                     break;
                 case CellStatus.Unknown:
                 default:
-                    cell.setAttribute("class", "cellUnknown");
+                    rect.setAttribute("class", "cellUnknown");
                     hint.setAttribute("class", "hintUnknown");
                     crossUp.setAttribute("class", "crossUnknown");
                     crossDown.setAttribute("class", "crossUnknown");
@@ -56,23 +60,27 @@ export class GridView {
         }
     }
 
-    private _setCellApplied(x: number, y: number) {
-        const cell = document.getElementById(`hint-${x}-${y}`);
-        if (cell !== null) {
-            const isApplied = this._grid.getApplied(x, y);
+    private _updateCellApplied(cell: GridCell) {
+        const element = document.getElementById(`hint-${cell.x}-${cell.y}`);
+        if (element !== null && cell !== undefined) {
+            const isApplied = cell.applied;
             if (isApplied) {
-                cell.classList.add("applied");
+                element.classList.add("applied");
             } else {
-                cell.classList.remove("applied");
+                element.classList.remove("applied");
             }
         }
     }
 
-    private _setCellContent(x: number, y: number) {
-        const cell = document.getElementById(`hint-${x}-${y}`);
-        if (cell !== null) {
-            const hint = this._grid.getHint(x, y);
-            cell.textContent = hint;
+    private _updateCellContent(cell: GridCell) {
+        const element = document.getElementById(`hint-${cell.x}-${cell.y}`);
+        if (element !== null && cell !== undefined) {
+            const hint = cell.hint;
+            if (hint >= 0) {
+                element.textContent = `${hint}`;
+            } else {
+                element.textContent = " ";
+            }
         }
     }
 
@@ -135,23 +143,26 @@ export class GridView {
     }
 
     private _onMouseClick(e: MouseEvent): any {
-        const cell = e.target as SVGRectElement;
-        if (cell !== null) {
-            const parts = cell.id.split("-");
+        const target = e.target as SVGRectElement;
+        if (target !== null) {
+            const parts = target.id.split("-");
             if (parts.length > 2 && parts[0] === "cell") {
-                this._onCellClick(parseInt(parts[1]), parseInt(parts[2]));
+                const cell = this._grid.getCell(parseInt(parts[1]), parseInt(parts[2]));
+                if (cell !== undefined) {
+                    this._onCellClick(cell);
+                }
             }
         }
     }
 
-    private _onCellClick(x: number, y: number): void {
-        this._grid.toggleStatus(x, y);
-        this._setCellStatus(x, y);
+    private _onCellClick(cell: GridCell): void {
+        cell.toggleStatus();
+        this._updateCellStatus(cell);
     }
 
-    private _onCellChanged(x: number, y: number): void {
-        this._setCellStatus(x, y);
-        this._setCellContent(x, y);
-        this._setCellApplied(x, y);
+    private _onCellChanged(cell: GridCell): void {
+        this._updateCellStatus(cell);
+        this._updateCellContent(cell);
+        this._updateCellApplied(cell);
     }
 }

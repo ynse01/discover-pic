@@ -1,3 +1,4 @@
+import { GridCell } from "./grid-cell.js";
 
 export enum CellStatus {
     Unknown = 0,
@@ -11,23 +12,21 @@ export class Grid {
     public readonly cellWidth: number;
     public readonly cellHeight: number;
     public static readonly padding = 5;
-    private _hints: string[][];
-    private _status: CellStatus[] = [];
-    private _applied: boolean[] = [];
-    private _cellChangedHandler: ((x: number, y: number) => void) | undefined ; 
+    private _cells: GridCell[];
+    private _cellChangedHandler: ((cell: GridCell) => void) | undefined ; 
 
     constructor(width: number, height: number, puzzle: any) {
         this.numCols = puzzle["numCols"];
         this.numRows = puzzle["numRows"];
         this.cellWidth = (width - 2 * Grid.padding) / this.numCols;
         this.cellHeight = (height - 2 * Grid.padding) / this.numRows;
-        this._hints = [];
+        this._cells = [];
         const rows = <string[]>puzzle["rows"];
         for (let y = 0; y < this.numRows; y++) {
-            this._hints[y] = Array.from(rows[y]);
+            const row = Array.from(rows[y]);
+            const baseIndex = y * this.numCols;
             for (let x = 0; x < this.numCols; x++) {
-                this.setStatus(x, y, CellStatus.Unknown);
-                this.setApplied(x, y, false);
+                this._cells[baseIndex + x] = new GridCell(this, x, y, row[x]);
             }
         }
     }
@@ -40,75 +39,24 @@ export class Grid {
         return (y * this.cellHeight) + Grid.padding;
     }
 
-    public getHint(x: number, y: number): string {
-        return this._hints[y][x];
-    }
-
-    public getStatus(x: number, y: number): CellStatus {
-        let status = CellStatus.Empty;
+    public getCell(x: number, y: number): GridCell | undefined {
+        let cell: GridCell | undefined = undefined;
         if (this.inRange(x, y)) {
             const index = (y * this.numCols) + x;
-            status = this._status[index];
+            cell = this._cells[index];
         }
-        return status;
-    }
-
-    public setStatus(x: number, y: number, value: CellStatus): void {
-        if (this.inRange(x, y)) {
-            const index = (y * this.numCols) + x;
-            this._status[index] = value;
-            if (this._cellChangedHandler !== undefined) {
-                this._cellChangedHandler(x, y);
-            }
-        }
-    }
-
-    public getApplied(x: number, y: number): boolean {
-        let isApplied = false;
-        if (this.inRange(x, y)) {
-            const index = (y * this.numCols) + x;
-            isApplied = this._applied[index];
-        }
-        return isApplied;
-    }
-
-    public setApplied(x: number, y: number, applied: boolean = true): void {
-        if (this.inRange(x, y)) {
-            const index = (y * this.numCols) + x;
-            this._applied[index] = applied;
-            if (this._cellChangedHandler !== undefined) {
-                this._cellChangedHandler(x, y);
-            }
-        }
+        return cell;
     }
 
     public inRange(x: number, y: number): boolean {
         return x >= 0 && x < this.numCols && y >= 0 && y < this.numRows;
     }
 
-    public toggleStatus(x: number, y: number): CellStatus {
-        const index = (y * this.numCols) + x;
-        const oldStatus = this._status[index];
-        let newStatus: CellStatus;
-        switch(oldStatus) {
-            case CellStatus.Unknown:
-                newStatus = CellStatus.Full;
-                break;
-            case CellStatus.Full:
-                newStatus = CellStatus.Empty;
-                break;
-            case CellStatus.Empty:
-                newStatus = CellStatus.Unknown;
-                break;
-        }
-        this._status[index] = newStatus;
-        if (this._cellChangedHandler !== undefined) {
-            this._cellChangedHandler(x, y);
-        }
-       return newStatus;
+    public get cellChangedHandler(): ((cell: GridCell) => void) | undefined {
+        return this._cellChangedHandler;
     }
 
-    public registerChangeHandler(handler: (x: number, y: number) => void) {
+    public registerChangeHandler(handler: (cell: GridCell) => void) {
         this._cellChangedHandler = handler;
     }
 }
