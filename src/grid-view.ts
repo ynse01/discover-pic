@@ -28,21 +28,29 @@ export class GridView {
     private _setCellStatus(x: number, y: number) {
         const cell = document.getElementById(`cell-${x}-${y}`);
         const hint = document.getElementById(`hint-${x}-${y}`);
-        if (cell !== null && hint !== null) {
+        const crossUp = document.getElementById(`crossup-${x}-${y}`);
+        const crossDown = document.getElementById(`crossdown-${x}-${y}`);
+        if (cell !== null && hint !== null && crossUp !== null && crossDown !== null) {
             const status = this._grid.getStatus(x, y);
             switch(status) {
                 case CellStatus.Empty:
                     cell.setAttribute("class", "cellEmpty");
                     hint.setAttribute("class", "hintEmpty");
+                    crossUp.setAttribute("class", "crossEmpty");
+                    crossDown.setAttribute("class", "crossEmpty");
                     break;
                 case CellStatus.Full:
                     cell.setAttribute("class", "cellFull");
                     hint.setAttribute("class", "hintFull");
+                    crossUp.setAttribute("class", "crossFull");
+                    crossDown.setAttribute("class", "crossFull");
                     break;
                 case CellStatus.Unknown:
                 default:
                     cell.setAttribute("class", "cellUnknown");
                     hint.setAttribute("class", "hintUnknown");
+                    crossUp.setAttribute("class", "crossUnknown");
+                    crossDown.setAttribute("class", "crossUnknown");
                     break;
             }
         }
@@ -57,29 +65,61 @@ export class GridView {
     }
 
     private _drawCell(x: number, y: number): void {
-        const rect = document.createElementNS(GridView.svgNS, "rect");
         const xPos = this._grid.getXPos(x);
         const yPos = this._grid.getYPos(y);
+        const rect = this._drawRect(xPos, yPos);
+        rect.setAttribute("id", `cell-${x}-${y}`);
+        const cross = this._drawCross(xPos, yPos);
+        cross[0].setAttribute("id", `crossdown-${x}-${y}`);
+        cross[1].setAttribute("id", `crossup-${x}-${y}`);
+        const text = this._drawHint(xPos, yPos);
+        text.setAttribute("id", `hint-${x}-${y}`);
+    }
+
+    private _drawRect(xPos: number, yPos: number): SVGRectElement {
+        const rect = document.createElementNS(GridView.svgNS, "rect");
         rect.setAttribute("x", `${xPos}`);
         rect.setAttribute("y", `${yPos}`);
         rect.setAttribute("width", `${this._grid.cellWidth}`);
         rect.setAttribute("height", `${this._grid.cellHeight}`);
         rect.setAttribute("class", "cellUnknown");
-        rect.setAttribute("id", `cell-${x}-${y}`);
         rect.onclick = this._onMouseClick.bind(this);
         this._svg.appendChild(rect);
+        return rect;
+    }
+
+    private _drawHint(xPos: number, yPos: number): SVGTextElement {
         const text = document.createElementNS(GridView.svgNS, "text");
         text.setAttribute("x", `${xPos + (this._grid.cellWidth / 2)}`);
         text.setAttribute("y", `${yPos + (this._grid.cellHeight * GridView.fontBaselineFactor)}`);
         text.setAttribute("font-size", `${this._grid.cellHeight * GridView.fontSizeFactor}`);
         text.setAttribute('text-anchor', "middle")
-        text.setAttribute("fill", "black");
-        rect.setAttribute("class", "textUnknown");
-        text.setAttribute("id", `hint-${x}-${y}`);
+        text.setAttribute("class", "textUnknown");
         text.setAttribute("pointer-events", "none");
         const node = document.createTextNode(" ");
         text.appendChild(node);
         this._svg.appendChild(text);
+        return text;
+    }
+
+    private _drawCross(xPos: number, yPos: number): SVGLineElement[] {
+        const down = document.createElementNS(GridView.svgNS, "line");
+        down.setAttribute("x1", `${xPos + 2}`);
+        down.setAttribute("y1", `${yPos + 2}`);
+        down.setAttribute("x2", `${xPos + this._grid.cellWidth - 2}`);
+        down.setAttribute("y2", `${yPos + this._grid.cellHeight - 2}`);
+        down.setAttribute("class", "crossUnknown");
+        down.setAttribute("pointer-events", "none");
+        this._svg.appendChild(down);
+        const up = document.createElementNS(GridView.svgNS, "line");
+        up.setAttribute("x1", `${xPos + this._grid.cellWidth - 2}`);
+        up.setAttribute("y1", `${yPos + 2}`);
+        up.setAttribute("x2", `${xPos + 2}`);
+        up.setAttribute("y2", `${yPos + this._grid.cellHeight - 2}`);
+        up.setAttribute("class", "crossUnknown");
+        up.setAttribute("pointer-events", "none");
+        this._svg.appendChild(up);
+        return [down, up];
     }
 
     private _onMouseClick(e: MouseEvent): any {
