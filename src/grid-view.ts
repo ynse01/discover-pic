@@ -57,8 +57,8 @@ export class GridView {
     private _setCellContent(x: number, y: number) {
         const cell = document.getElementById(`text-${x}-${y}`);
         if (cell !== null) {
-            const content = this._grid.getContent(x, y);
-            cell.textContent = content;
+            const hint = this._grid.getHint(x, y);
+            cell.textContent = hint;
         }
     }
 

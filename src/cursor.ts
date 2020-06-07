@@ -83,16 +83,17 @@ export class Cursor {
     }
 
     private _apply(): void {
-        const hint = this._grid.getContent(this._xPos, this._yPos);
-        if (hint !== " ") {
-            switch(hint) {
-                case "0":
-                    this._settAllCells(CellStatus.Empty);
-                    break;
-                case "9":
-                    this._settAllCells(CellStatus.Full);
-                    break;
-            }
+        const hint = this._grid.getHint(this._xPos, this._yPos);
+        switch(hint) {
+            case "0":
+                this._settAllCells(CellStatus.Empty);
+                break;
+            case "9":
+                this._settAllCells(CellStatus.Full);
+                break;
+            default:
+                // Do nothing.
+                break;
         }
     }
 

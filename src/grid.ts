@@ -11,7 +11,7 @@ export class Grid {
     public readonly cellWidth: number;
     public readonly cellHeight: number;
     public static readonly padding = 5;
-    private _content: string[][];
+    private _hints: string[][];
     private _status: CellStatus[] = [];
     private _cellChangedHandler: ((x: number, y: number) => void) | undefined ; 
 
@@ -20,10 +20,10 @@ export class Grid {
         this.numRows = puzzle["numRows"];
         this.cellWidth = (width - 2 * Grid.padding) / this.numCols;
         this.cellHeight = (height - 2 * Grid.padding) / this.numRows;
-        this._content = [];
+        this._hints = [];
         const rows = <string[]>puzzle["rows"];
         for (let y = 0; y < this.numRows; y++) {
-            this._content[y] = Array.from(rows[y]);
+            this._hints[y] = Array.from(rows[y]);
             for (let x = 0; x < this.numCols; x++) {
                 this.setStatus(x, y, CellStatus.Unknown);
             }
@@ -38,8 +38,8 @@ export class Grid {
         return (y * this.cellHeight) + Grid.padding;
     }
 
-    public getContent(x: number, y: number): string {
-        return this._content[y][x];
+    public getHint(x: number, y: number): string {
+        return this._hints[y][x];
     }
 
     public getStatus(x: number, y: number): CellStatus {
