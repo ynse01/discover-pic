@@ -17,8 +17,8 @@ export class Grid {
     constructor(width: number, height: number, puzzle: any) {
         this.numCols = puzzle["numCols"];
         this.numRows = puzzle["numRows"];
-        const cellWidth = (width - 2 * Grid.padding) / this.numCols;
-        const cellHeight = (height - 2 * Grid.padding) / this.numRows;
+        const cellWidth = (width - 2 * Grid.padding) / (this.numCols + 2);
+        const cellHeight = (height - 2 * Grid.padding) / (this.numRows + 2);
         this.cellSize = Math.min(cellWidth, cellHeight);
         this._cells = [];
         const rows = <string[]>puzzle["rows"];
@@ -32,11 +32,11 @@ export class Grid {
     }
 
     public getXPos(x: number): number {
-        return (x * this.cellSize) + Grid.padding;
+        return ((x + 1) * this.cellSize) + Grid.padding;
     }
 
     public getYPos(y: number): number {
-        return (y * this.cellSize) + Grid.padding;
+        return ((y + 1) * this.cellSize) + Grid.padding;
     }
 
     public getCell(x: number, y: number): GridCell | undefined {
