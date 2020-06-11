@@ -20,8 +20,8 @@ export class Cursor {
         const cursor = document.createElementNS(GridView.svgNS, "rect");
         cursor.setAttribute("x", `${this._grid.getXPos(this._xPos - 1)}`);
         cursor.setAttribute("y", `${this._grid.getYPos(this._yPos - 1)}`);
-        cursor.setAttribute("width", `${this._grid.cellWidth * 3}`);
-        cursor.setAttribute("height", `${this._grid.cellHeight * 3}`);
+        cursor.setAttribute("width", `${this._grid.cellSize * 3}`);
+        cursor.setAttribute("height", `${this._grid.cellSize * 3}`);
         cursor.setAttribute("id", "cursor");
         cursor.setAttribute("class", "cursor");
         cursor.setAttribute("pointer-events", "none");
@@ -67,7 +67,7 @@ export class Cursor {
             case " ":
                 const solver = new MicroSolver(this._grid, this._xPos, this._yPos);
                 if (solver.applyHint()) {
-                    this._grid.setApplied(this._xPos, this._yPos);
+                    this._grid.getCell(this._xPos, this._yPos).applied = true;
                 }
                 break;
         }
