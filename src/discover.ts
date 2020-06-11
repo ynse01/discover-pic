@@ -1,6 +1,7 @@
 import { Grid } from "./grid.js";
 import { GridView } from "./grid-view.js";
 import { Cursor } from "./cursor.js";
+import { SaveGame } from "./save-game.js";
 
 export class DiscoverThePicture {
     private _id: string;
@@ -21,14 +22,29 @@ export class DiscoverThePicture {
         if (width == null || height == null) {
             throw new Error(`SVG Element doesn't have a viewBox.`);
         }
-        this.loadJson(url, (puzzle) => {
+        this.loadPuzzle(url, (puzzle) => {
             this._grid = new Grid(width, height, puzzle);
+            this.loadSavedGame();
             new GridView(svg, this._grid);
             new Cursor(svg, this._grid);    
         });
     }
 
-    private loadJson(url: string, cb: (loaded: any)=> void) {
+    public saveGame() {
+        if (this._grid !== undefined) {
+            const game = SaveGame.fromGrid(this._grid);
+            const json = JSON.stringify(game);
+            window.localStorage.setItem(this._grid["name"], json);
+        }
+    }
+
+    public clear(): void {
+        if (this._grid !== undefined) {
+            this._grid.clearGame();
+        }
+    }
+
+    private loadPuzzle(url: string, cb: (loaded: any)=> void) {
         const request = new XMLHttpRequest();
         request.overrideMimeType("application/json");
         request.open("GET", url, true);
@@ -38,6 +54,13 @@ export class DiscoverThePicture {
             }
         }
         request.send(null);
+    }
+
+    private loadSavedGame(): void {
+        if (this._grid !== undefined) {
+            const saveGame = <SaveGame><any>window.localStorage.getItem(this._grid.name);
+            SaveGame.loadGame(saveGame, this._grid);
+        }
     }
 }
 // Let HTML page easiliy access this class.

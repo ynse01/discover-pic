@@ -11,10 +11,12 @@ export class Grid {
     public readonly numRows: number;
     public readonly cellSize: number;
     public static readonly padding = 5;
+    private _name: string;
     private _cells: GridCell[];
     private _cellChangedHandler: ((cell: GridCell) => void) | undefined ; 
 
     constructor(width: number, height: number, puzzle: any) {
+        this._name = puzzle["name"];
         this.numCols = puzzle["numCols"];
         this.numRows = puzzle["numRows"];
         const cellWidth = (width - 2 * Grid.padding) / (this.numCols + 2);
@@ -29,6 +31,10 @@ export class Grid {
                 this._cells[baseIndex + x] = new GridCell(this, x, y, row[x]);
             }
         }
+    }
+
+    public get name(): string {
+        return this._name;
     }
 
     public getXPos(x: number): number {
@@ -58,5 +64,23 @@ export class Grid {
 
     public registerChangeHandler(handler: (cell: GridCell) => void) {
         this._cellChangedHandler = handler;
+    }
+
+    public clearGame(): void {
+        this.foreach(cell => {
+            cell.applied = false;
+            cell.status = CellStatus.Unknown;
+        });
+    }
+
+    public foreach(cb: (cell: GridCell) => void): void {
+        for (let y = 0; y < this.numRows; y++) {
+            for(let x = 0; x < this.numCols; x++) {
+                const cell = this.getCell(x, y);
+                if (cell !== undefined) {
+                    cb(cell);
+                }
+            }
+        }        
     }
 }
