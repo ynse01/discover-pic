@@ -100,8 +100,8 @@ export class GridView {
         const rect = document.createElementNS(GridView.svgNS, "rect");
         rect.setAttribute("x", `${xPos}`);
         rect.setAttribute("y", `${yPos}`);
-        rect.setAttribute("width", `${this._grid.cellWidth}`);
-        rect.setAttribute("height", `${this._grid.cellHeight}`);
+        rect.setAttribute("width", `${this._grid.cellSize}`);
+        rect.setAttribute("height", `${this._grid.cellSize}`);
         rect.setAttribute("class", "cellUnknown");
         rect.onclick = this._onMouseClick.bind(this);
         this._svg.appendChild(rect);
@@ -110,9 +110,9 @@ export class GridView {
 
     private _drawHint(xPos: number, yPos: number): SVGTextElement {
         const text = document.createElementNS(GridView.svgNS, "text");
-        text.setAttribute("x", `${xPos + (this._grid.cellWidth / 2)}`);
-        text.setAttribute("y", `${yPos + (this._grid.cellHeight * GridView.fontBaselineFactor)}`);
-        text.setAttribute("font-size", `${this._grid.cellHeight * GridView.fontSizeFactor}`);
+        text.setAttribute("x", `${xPos + (this._grid.cellSize / 2)}`);
+        text.setAttribute("y", `${yPos + (this._grid.cellSize * GridView.fontBaselineFactor)}`);
+        text.setAttribute("font-size", `${this._grid.cellSize * GridView.fontSizeFactor}`);
         text.setAttribute('text-anchor', "middle")
         text.setAttribute("class", "textUnknown");
         text.setAttribute("pointer-events", "none");
@@ -126,16 +126,16 @@ export class GridView {
         const down = document.createElementNS(GridView.svgNS, "line");
         down.setAttribute("x1", `${xPos + 2}`);
         down.setAttribute("y1", `${yPos + 2}`);
-        down.setAttribute("x2", `${xPos + this._grid.cellWidth - 2}`);
-        down.setAttribute("y2", `${yPos + this._grid.cellHeight - 2}`);
+        down.setAttribute("x2", `${xPos + this._grid.cellSize - 2}`);
+        down.setAttribute("y2", `${yPos + this._grid.cellSize - 2}`);
         down.setAttribute("class", "crossUnknown");
         down.setAttribute("pointer-events", "none");
         this._svg.appendChild(down);
         const up = document.createElementNS(GridView.svgNS, "line");
-        up.setAttribute("x1", `${xPos + this._grid.cellWidth - 2}`);
+        up.setAttribute("x1", `${xPos + this._grid.cellSize - 2}`);
         up.setAttribute("y1", `${yPos + 2}`);
         up.setAttribute("x2", `${xPos + 2}`);
-        up.setAttribute("y2", `${yPos + this._grid.cellHeight - 2}`);
+        up.setAttribute("y2", `${yPos + this._grid.cellSize - 2}`);
         up.setAttribute("class", "crossUnknown");
         up.setAttribute("pointer-events", "none");
         this._svg.appendChild(up);

@@ -9,8 +9,7 @@ export enum CellStatus {
 export class Grid {
     public readonly numCols: number;
     public readonly numRows: number;
-    public readonly cellWidth: number;
-    public readonly cellHeight: number;
+    public readonly cellSize: number;
     public static readonly padding = 5;
     private _cells: GridCell[];
     private _cellChangedHandler: ((cell: GridCell) => void) | undefined ; 
@@ -18,8 +17,9 @@ export class Grid {
     constructor(width: number, height: number, puzzle: any) {
         this.numCols = puzzle["numCols"];
         this.numRows = puzzle["numRows"];
-        this.cellWidth = (width - 2 * Grid.padding) / this.numCols;
-        this.cellHeight = (height - 2 * Grid.padding) / this.numRows;
+        const cellWidth = (width - 2 * Grid.padding) / this.numCols;
+        const cellHeight = (height - 2 * Grid.padding) / this.numRows;
+        this.cellSize = Math.min(cellWidth, cellHeight);
         this._cells = [];
         const rows = <string[]>puzzle["rows"];
         for (let y = 0; y < this.numRows; y++) {
@@ -32,11 +32,11 @@ export class Grid {
     }
 
     public getXPos(x: number): number {
-        return (x * this.cellWidth) + Grid.padding;
+        return (x * this.cellSize) + Grid.padding;
     }
 
     public getYPos(y: number): number {
-        return (y * this.cellHeight) + Grid.padding;
+        return (y * this.cellSize) + Grid.padding;
     }
 
     public getCell(x: number, y: number): GridCell | undefined {
