@@ -30,7 +30,7 @@ export class SaveGame {
 
     public static loadGame(game: SaveGame, grid: Grid): boolean {
         let fits = false;
-        if (game.name === grid.name) {
+        if (game !== null && game.name === grid.name) {
             const numGridCells = grid.numCols * grid.numRows;
             const numGameCells = game.cells.length;
             if (numGridCells === numGameCells) {
