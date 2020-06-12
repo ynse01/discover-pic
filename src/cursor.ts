@@ -11,7 +11,7 @@ export class Cursor {
 
     constructor(svg: SVGElement, grid: Grid) {
         this._grid = grid; 
-        this._visibility = false;
+        this._visibility = true;
         this._cursor = this._drawCursor();
         svg.appendChild(this._cursor);
         this._subscribe();
@@ -22,6 +22,11 @@ export class Cursor {
     }
 
     public set visibility(value: boolean) {
+        if (value) {
+            this._cursor.classList.remove("cursorHide");
+        } else {
+            this._cursor.classList.add("cursorHide");
+        }
         this._visibility = value;
     }
 
@@ -79,7 +84,11 @@ export class Cursor {
             case " ":
                 const solver = new MicroSolver(this._grid, this._xPos, this._yPos);
                 if (solver.applyHint()) {
-                    this._grid.getCell(this._xPos, this._yPos)!.applied = true;
+                    const cell = this._grid.getCell(this._xPos, this._yPos)
+                    if (cell !== undefined) {
+                        cell.applied = true;
+                        this._grid.setCell(cell);
+                    }
                 }
                 break;
         }

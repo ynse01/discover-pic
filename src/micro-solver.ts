@@ -86,6 +86,7 @@ export class MicroSolver {
     private _setAllCells(status: CellStatus) {
         this._foreach((cell: GridCell) => {
             cell.status = status;
+            this._grid.setCell(cell);
         });
     }
 
@@ -93,6 +94,7 @@ export class MicroSolver {
         this._foreach((cell: GridCell) => {
             if (cell.status === CellStatus.Unknown) {
                 cell.status = status;
+                this._grid.setCell(cell);
             }
         });
     }

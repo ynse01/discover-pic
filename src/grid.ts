@@ -28,7 +28,8 @@ export class Grid {
             const row = Array.from(rows[y]);
             const baseIndex = y * this.numCols;
             for (let x = 0; x < this.numCols; x++) {
-                this._cells[baseIndex + x] = new GridCell(this, x, y, row[x]);
+                const hint = parseInt(row[x]);
+                this._cells[baseIndex + x] = new GridCell(this, x, y, hint);
             }
         }
     }
@@ -49,9 +50,17 @@ export class Grid {
         let cell: GridCell | undefined = undefined;
         if (this.inRange(x, y)) {
             const index = (y * this.numCols) + x;
-            cell = this._cells[index];
+            cell = this._cells[index].clone();
         }
         return cell;
+    }
+
+    public setCell(cell: GridCell): void {
+        const index = (cell.y * this.numCols) + cell.x;
+        this._cells[index] = cell;
+        if (this._cellChangedHandler !== undefined) {
+            this._cellChangedHandler(cell);
+        }
     }
 
     public inRange(x: number, y: number): boolean {
@@ -70,6 +79,7 @@ export class Grid {
         this.foreach(cell => {
             cell.applied = false;
             cell.status = CellStatus.Unknown;
+            this.setCell(cell);
         });
     }
 

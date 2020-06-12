@@ -4,27 +4,26 @@ export class GridCell {
     public readonly x: number;
     public readonly y: number;
     public readonly hint: number;
-    private _status: CellStatus;
-    private _applied: boolean;
+    public status: CellStatus;
+    public applied: boolean;
     private _grid: Grid;
 
-    constructor(grid: Grid, x: number, y: number, hint: string) {
+    constructor(grid: Grid, x: number, y: number, hint: number) {
         this._grid = grid;
         this.x = x;
         this.y = y;
-        const hintAsNumber = parseInt(hint);
-        if (isNaN(hintAsNumber)) {
+        if (isNaN(hint)) {
             this.hint = -1;
         } else {
-            this.hint = hintAsNumber;
+            this.hint = hint;
         }
-        this._status = CellStatus.Unknown;
-        this._applied = false;
+        this.status = CellStatus.Unknown;
+        this.applied = false;
     }
 
     public toggleStatus(): CellStatus {
         let newStatus: CellStatus = CellStatus.Unknown;
-        const oldStatus = this._status;
+        const oldStatus = this.status;
         switch(oldStatus) {
             case CellStatus.Unknown:
                 newStatus = CellStatus.Full;
@@ -37,28 +36,13 @@ export class GridCell {
                 break;
         }
         this.status = newStatus;
-       return newStatus;
+        return newStatus;
     }
 
-    public get status(): CellStatus {
-        return this._status;
-    }
-
-    public set status(value: CellStatus) {
-        this._status = value;
-        if (this._grid.cellChangedHandler !== undefined) {
-            this._grid.cellChangedHandler(this);
-        }
-    }
-
-    public get applied(): boolean {
-        return this._applied;
-    }
-
-    public set applied(value: boolean) {
-        this._applied = value;
-        if (this._grid.cellChangedHandler !== undefined) {
-            this._grid.cellChangedHandler(this);
-        }
+    public clone(): GridCell {
+        const clone = new GridCell(this._grid, this.x, this.y, this.hint);
+        clone.applied = this.applied;
+        clone.status = this.status;
+        return clone;
     }
 }

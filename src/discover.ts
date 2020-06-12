@@ -6,6 +6,7 @@ import { SaveGame } from "./save-game.js";
 export class DiscoverThePicture {
     private _id: string;
     private _grid: Grid | undefined;
+    private _cursor: Cursor | undefined;
     
     constructor(gridId: string) {
         this._id = gridId;
@@ -26,8 +27,18 @@ export class DiscoverThePicture {
             this._grid = new Grid(width, height, puzzle);
             this.loadSavedGame();
             new GridView(svg, this._grid);
-            new Cursor(svg, this._grid);    
+            this._cursor = new Cursor(svg, this._grid);    
         });
+    }
+
+    public toggleCursor(): boolean {
+        let visibility = false;
+        const cursor = this._cursor;
+        if (cursor !== undefined) {
+            cursor.visibility = !cursor.visibility;
+            visibility = cursor.visibility;
+        }
+        return visibility;
     }
 
     public saveGame() {

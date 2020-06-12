@@ -157,7 +157,7 @@ export class GridView {
 
     private _onCellClick(cell: GridCell): void {
         cell.toggleStatus();
-        this._updateCellStatus(cell);
+        this._grid.setCell(cell);
     }
 
     private _onCellChanged(cell: GridCell): void {
