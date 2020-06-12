@@ -1,4 +1,7 @@
 import { GridCell } from "./grid-cell.js";
+import { MicroIterator } from "./micro-iterator.js";
+import { GridIterator } from "./grid-iterator.js";
+import { MicroSolver } from "./micro-solver.js";
 
 export enum CellStatus {
     Unknown = 0,
@@ -29,7 +32,7 @@ export class Grid {
             const baseIndex = y * this.numCols;
             for (let x = 0; x < this.numCols; x++) {
                 const hint = parseInt(row[x]);
-                this._cells[baseIndex + x] = new GridCell(this, x, y, hint);
+                this._cells[baseIndex + x] = new GridCell(x, y, hint);
             }
         }
     }
@@ -63,6 +66,29 @@ export class Grid {
         }
     }
 
+    public checkApplied(cell: GridCell): void {
+        cell.applied = this._isApplied(cell);
+        this.setCell(cell);
+    }
+
+    public checkErrors(): number {
+        let numErrors = 0;
+        const iterator = new GridIterator(this);
+        iterator.foreach(cell => {
+            if (cell.hint >= 0) {
+                const solver = new MicroSolver(this, cell.x, cell.y);
+                const ok = solver.checkHint();
+                cell.error = !ok;
+                if (!ok) {
+                    numErrors++;
+                }
+                this.setCell(cell);
+            }
+        });
+        console.log(`Found ${numErrors} errors.`);
+        return numErrors;
+    }
+
     public inRange(x: number, y: number): boolean {
         return x >= 0 && x < this.numCols && y >= 0 && y < this.numRows;
     }
@@ -76,21 +102,20 @@ export class Grid {
     }
 
     public clearGame(): void {
-        this.foreach(cell => {
+        const iterator = new GridIterator(this);
+        iterator.foreach(cell => {
             cell.applied = false;
             cell.status = CellStatus.Unknown;
             this.setCell(cell);
         });
     }
 
-    public foreach(cb: (cell: GridCell) => void): void {
-        for (let y = 0; y < this.numRows; y++) {
-            for(let x = 0; x < this.numCols; x++) {
-                const cell = this.getCell(x, y);
-                if (cell !== undefined) {
-                    cb(cell);
-                }
-            }
-        }        
+    private _isApplied(cell: GridCell): boolean {
+        let isApplied = true;
+        const iterator = new MicroIterator(this, cell.x, cell.y);
+        iterator.foreach(cell => {
+            isApplied = isApplied && (cell.status !== CellStatus.Unknown);
+        });
+        return isApplied;
     }
 }

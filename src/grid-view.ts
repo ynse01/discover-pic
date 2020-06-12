@@ -22,21 +22,19 @@ export class GridView {
                 const cell = this._grid.getCell(x, y);
                 if (cell !== undefined) {
                     this._drawCell(x, y);
-                    this._updateCellStatus(cell);
-                    this._updateCellContent(cell);
+                    this._updateCell(cell);
                 }
             }
         }
     }
 
-    private _updateCellStatus(cell: GridCell) {
+    private _updateCell(cell: GridCell) {
         const rect = document.getElementById(`cell-${cell.x}-${cell.y}`);
         const hint = document.getElementById(`hint-${cell.x}-${cell.y}`);
         const crossUp = document.getElementById(`crossup-${cell.x}-${cell.y}`);
         const crossDown = document.getElementById(`crossdown-${cell.x}-${cell.y}`);
         if (rect !== null && hint !== null && crossUp !== null && crossDown !== null) {
-            const status = cell.status;
-            switch(status) {
+            switch(cell.status) {
                 case CellStatus.Empty:
                     rect.setAttribute("class", "cellEmpty");
                     hint.setAttribute("class", "hintEmpty");
@@ -57,29 +55,20 @@ export class GridView {
                     crossDown.setAttribute("class", "crossUnknown");
                     break;
             }
-        }
-    }
-
-    private _updateCellApplied(cell: GridCell) {
-        const element = document.getElementById(`hint-${cell.x}-${cell.y}`);
-        if (element !== null && cell !== undefined) {
-            const isApplied = cell.applied;
-            if (isApplied) {
-                element.classList.add("applied");
+            if (cell.applied) {
+                hint.classList.add("applied");
             } else {
-                element.classList.remove("applied");
+                hint.classList.remove("applied");
             }
-        }
-    }
-
-    private _updateCellContent(cell: GridCell) {
-        const element = document.getElementById(`hint-${cell.x}-${cell.y}`);
-        if (element !== null && cell !== undefined) {
-            const hint = cell.hint;
-            if (hint >= 0) {
-                element.textContent = `${hint}`;
+            if (cell.error) {
+                hint.classList.add("hintError");
             } else {
-                element.textContent = " ";
+                hint.classList.remove("hintError");
+            }
+            if (cell.hint >= 0) {
+                hint.textContent = `${cell.hint}`;
+            } else {
+                hint.textContent = " ";
             }
         }
     }
@@ -161,8 +150,6 @@ export class GridView {
     }
 
     private _onCellChanged(cell: GridCell): void {
-        this._updateCellStatus(cell);
-        this._updateCellContent(cell);
-        this._updateCellApplied(cell);
+        this._updateCell(cell);
     }
 }

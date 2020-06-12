@@ -1,4 +1,4 @@
-import { CellStatus, Grid } from "./grid.js";
+import { CellStatus } from "./grid.js";
 
 export class GridCell {
     public readonly x: number;
@@ -6,10 +6,9 @@ export class GridCell {
     public readonly hint: number;
     public status: CellStatus;
     public applied: boolean;
-    private _grid: Grid;
+    public error: boolean;
 
-    constructor(grid: Grid, x: number, y: number, hint: number) {
-        this._grid = grid;
+    constructor(x: number, y: number, hint: number) {
         this.x = x;
         this.y = y;
         if (isNaN(hint)) {
@@ -19,6 +18,7 @@ export class GridCell {
         }
         this.status = CellStatus.Unknown;
         this.applied = false;
+        this.error = false;
     }
 
     public toggleStatus(): CellStatus {
@@ -40,7 +40,7 @@ export class GridCell {
     }
 
     public clone(): GridCell {
-        const clone = new GridCell(this._grid, this.x, this.y, this.hint);
+        const clone = new GridCell(this.x, this.y, this.hint);
         clone.applied = this.applied;
         clone.status = this.status;
         return clone;

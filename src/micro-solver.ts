@@ -1,5 +1,6 @@
 import { Grid, CellStatus } from "./grid.js";
 import { GridCell } from "./grid-cell.js";
+import { MicroIterator } from "./micro-iterator.js";
 
 class MicroStatistics {
     public numEmpty: number = 0;
@@ -83,15 +84,29 @@ export class MicroSolver {
         return isApplied;
     }
 
+    public checkHint(): boolean {
+        let checked = true;
+        const cell = this._grid.getCell(this._x, this._y);
+        if (cell !== undefined) {
+            const stats = this._getStatistics();
+            const tooMany = stats.numFull > cell.hint;
+            const tooLittle = stats.numEmpty > (9 - cell.hint);
+            checked = !(tooMany || tooLittle);
+        }
+        return checked;
+    }
+
     private _setAllCells(status: CellStatus) {
-        this._foreach((cell: GridCell) => {
+        const iterator = new MicroIterator(this._grid, this._x, this._y);
+        iterator.foreach((cell: GridCell) => {
             cell.status = status;
             this._grid.setCell(cell);
         });
     }
 
     private _setUnknownCells(status: CellStatus) {
-        this._foreach((cell: GridCell) => {
+        const iterator = new MicroIterator(this._grid, this._x, this._y);
+        iterator.foreach((cell: GridCell) => {
             if (cell.status === CellStatus.Unknown) {
                 cell.status = status;
                 this._grid.setCell(cell);
@@ -101,22 +116,12 @@ export class MicroSolver {
 
     private _getStatistics(): MicroStatistics {
         const stats = new MicroStatistics();
-        this._foreach((cell: GridCell) => {
+        const iterator = new MicroIterator(this._grid, this._x, this._y);
+        iterator.foreach((cell: GridCell) => {
             const status = cell.status;
             stats.add(status);
         });
         stats.finish();
         return stats;
-    }
-
-    private _foreach(cb: (cell: GridCell) => void): void {
-        for (let y = -1; y <= 1; y++) {
-            for(let x = -1; x <= 1; x++) {
-                const cell = this._grid.getCell(this._x + x, this._y + y);
-                if (cell !== undefined) {
-                    cb(cell);
-                }
-            }
-        }        
     }
 }

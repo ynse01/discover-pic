@@ -48,6 +48,10 @@
     fill: rgb(97, 97, 97);
 }
 
+.hintError {
+    fill: red;
+}
+
 .cursor {
     stroke: red;
     stroke-width: 3px;

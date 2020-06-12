@@ -1,6 +1,7 @@
-import { Grid } from "./grid.js";
+import { Grid, CellStatus } from "./grid.js";
 import { GridView } from "./grid-view.js";
-import { MicroSolver } from "./micro-solver.js";
+import { GridCell } from "./grid-cell.js";
+import { MicroIterator } from "./micro-iterator.js";
 
 export class Cursor {
     private _cursor: SVGRectElement;
@@ -43,10 +44,9 @@ export class Cursor {
     }
 
     private _moveCursor(): void {
-        const cursor = document.getElementById("cursor");
-        if (cursor !== null) {
-            cursor.setAttribute("x", `${this._grid.getXPos(this._xPos - 1)}`);
-            cursor.setAttribute("y", `${this._grid.getYPos(this._yPos - 1)}`);
+        if (this._cursor !== undefined) {
+            this._cursor.setAttribute("x", `${this._grid.getXPos(this._xPos - 1)}`);
+            this._cursor.setAttribute("y", `${this._grid.getYPos(this._yPos - 1)}`);
         }
     }
 
@@ -82,16 +82,25 @@ export class Cursor {
                 }
                 break;
             case " ":
-                const solver = new MicroSolver(this._grid, this._xPos, this._yPos);
-                if (solver.applyHint()) {
-                    const cell = this._grid.getCell(this._xPos, this._yPos)
-                    if (cell !== undefined) {
-                        cell.applied = true;
-                        this._grid.setCell(cell);
-                    }
+                const cell = this._grid.getCell(this._xPos, this._yPos)
+                if (cell !== undefined && cell.hint >= 0) {
+                    cell.applied = true;
+                    this._grid.setCell(cell);
+                    const status = (cell.hint > 4) ? CellStatus.Full : CellStatus.Empty;
+                    this._setUnknownCells(status);
                 }
                 break;
         }
         this._moveCursor();
+    }
+
+    private _setUnknownCells(status: CellStatus) {
+        const iterator = new MicroIterator(this._grid, this._xPos, this._yPos);
+        iterator.foreach((cell: GridCell) => {
+            if (cell.status === CellStatus.Unknown) {
+                cell.status = status;
+                this._grid.setCell(cell);
+            }
+        });
     }
 }

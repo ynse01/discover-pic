@@ -49,6 +49,12 @@ export class DiscoverThePicture {
         }
     }
 
+    public check(): void {
+        if (this._grid !== undefined) {
+            this._grid.checkErrors();
+        }
+    }
+
     public clear(): void {
         if (this._grid !== undefined) {
             this._grid.clearGame();

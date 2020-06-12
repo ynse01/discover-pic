@@ -1,5 +1,6 @@
 import { Grid, CellStatus } from "./grid.js";
 import { GridCell } from "./grid-cell.js";
+import { GridIterator } from "./grid-iterator.js";
 
 class SaveGameCell {
     public status: CellStatus = CellStatus.Unknown;
@@ -20,7 +21,8 @@ export class SaveGame {
     public static fromGrid(grid: Grid): SaveGame {
         const game = new SaveGame();
         game.name = grid.name;
-        grid.foreach(cell => {
+        const iterator = new GridIterator(grid);
+        iterator.foreach(cell => {
             game.cells.push(SaveGameCell.fromCell(cell));
         });
         // Keep compiler happy
