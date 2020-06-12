@@ -75,8 +75,11 @@ export class DiscoverThePicture {
 
     private loadSavedGame(): void {
         if (this._grid !== undefined) {
-            const saveGame = <SaveGame><any>window.localStorage.getItem(this._grid.name);
-            SaveGame.loadGame(saveGame, this._grid);
+            const savedString = window.localStorage.getItem(this._grid.name);
+            if (savedString !== null) {
+                const saveGame = JSON.parse(savedString);
+                SaveGame.loadGame(saveGame, this._grid);
+            }
         }
     }
 }

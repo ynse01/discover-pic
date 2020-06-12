@@ -44,6 +44,7 @@ export class SaveGame {
                         if (gridCell !== undefined) {
                             gridCell.applied = gameCell.applied;
                             gridCell.status = gameCell.status;
+                            grid.setCell(gridCell);
                         }
                         i++;
                     }
