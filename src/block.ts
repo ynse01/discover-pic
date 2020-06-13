@@ -1,5 +1,4 @@
 import { Grid, CellStatus } from "./grid.js";
-import { GridCell } from "./grid-cell.js";
 import { MicroIterator } from "./micro-iterator.js";
 
 class MicroStatistics {
@@ -94,38 +93,36 @@ export class Block {
         this.error = tooMany || tooLittle;
     }
 
-    public checkApplied(cell: GridCell): boolean {
+    public checkApplied(x: number, y: number): boolean {
         let isApplied = true;
-        const iterator = new MicroIterator(this._grid, cell.x, cell.y);
-        iterator.forEach(cell => {
-            isApplied = isApplied && (cell.status !== CellStatus.Unknown);
+        const iterator = new MicroIterator(x, y);
+        iterator.forEach((x: number, y: number) => {
+            isApplied = isApplied && (this._grid.getStatus(x, y) !== CellStatus.Unknown);
         });
         return isApplied;
     }
 
     private _setAllCells(status: CellStatus) {
-        const iterator = new MicroIterator(this._grid, this.x, this.y);
-        iterator.forEach((cell: GridCell) => {
-            cell.status = status;
-            this._grid.setCell(cell);
+        const iterator = new MicroIterator(this.x, this.y);
+        iterator.forEach((x: number, y: number) => {
+            this._grid.setStatus(x, y, status);
         });
     }
 
     private _setUnknownCells(status: CellStatus) {
-        const iterator = new MicroIterator(this._grid, this.x, this.y);
-        iterator.forEach((cell: GridCell) => {
-            if (cell.status === CellStatus.Unknown) {
-                cell.status = status;
-                this._grid.setCell(cell);
+        const iterator = new MicroIterator(this.x, this.y);
+        iterator.forEach((x: number, y: number) => {
+            if (this._grid.getStatus(x, y) === CellStatus.Unknown) {
+                this._grid.setStatus(x, y, status);
             }
         });
     }
 
     private _getStatistics(): MicroStatistics {
         const stats = new MicroStatistics();
-        const iterator = new MicroIterator(this._grid, this.x, this.y);
-        iterator.forEach((cell: GridCell) => {
-            const status = cell.status;
+        const iterator = new MicroIterator(this.x, this.y);
+        iterator.forEach((x: number, y: number) => {
+            const status = this._grid.getStatus(x, y);
             stats.add(status);
         });
         stats.finish();

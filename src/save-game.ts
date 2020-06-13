@@ -1,28 +1,16 @@
 import { Grid, CellStatus } from "./grid.js";
-import { GridCell } from "./grid-cell.js";
 import { GridIterator } from "./grid-iterator.js";
-
-class SaveGameCell {
-    public status: CellStatus = CellStatus.Unknown;
-    public applied: boolean = false;
-
-    public static fromCell(cell: GridCell): SaveGameCell {
-        const game = new SaveGameCell();
-        game.status = cell.status;
-        return game;
-    }
-}
 
 export class SaveGame {
     private name: string | undefined = undefined;
-    private cells: SaveGameCell[] = [];
+    private cells: CellStatus[] = [];
 
     public static fromGrid(grid: Grid): SaveGame {
         const game = new SaveGame();
         game.name = grid.name;
         const iterator = new GridIterator(grid);
-        iterator.forEach(cell => {
-            game.cells.push(SaveGameCell.fromCell(cell));
+        iterator.forEach((x, y) => {
+            game.cells.push(grid.getStatus(x, y));
         });
         // Keep compiler happy
         game.name;
@@ -38,12 +26,8 @@ export class SaveGame {
                 let i = 0;
                 for (let y = 0; y < grid.numRows; y++) {
                     for(let x = 0; x < grid.numCols; x++) {
-                        const gridCell = grid.getCell(x, y);
                         const gameCell = game.cells[i];
-                        if (gridCell !== undefined) {
-                            gridCell.status = gameCell.status;
-                            grid.setCell(gridCell);
-                        }
+                        grid.setStatus(x, y, gameCell);
                         i++;
                     }
                 }                                

@@ -1,5 +1,4 @@
 import { CellStatus, Grid } from "./grid.js";
-import { GridCell } from "./grid-cell.js";
 import { Block } from "./block.js";
 
 export class GridView {
@@ -20,12 +19,9 @@ export class GridView {
     private drawGrid(): void {
         for (let y = 0; y < this._grid.numRows; y++) {
             for (let x = 0; x < this._grid.numCols; x++) {
-                const cell = this._grid.getCell(x, y);
+                this._drawCell(x, y);
+                this._updateCell(x, y);
                 const block = this._grid.getBlock(x, y);
-                if (cell !== undefined) {
-                    this._drawCell(x, y);
-                    this._updateCell(cell);
-                }
                 if (block !== undefined) {
                     this._updateBlock(block);
                 }
@@ -33,13 +29,14 @@ export class GridView {
         }
     }
 
-    private _updateCell(cell: GridCell) {
-        const rect = document.getElementById(`cell-${cell.x}-${cell.y}`);
-        const hint = document.getElementById(`hint-${cell.x}-${cell.y}`);
-        const crossUp = document.getElementById(`crossup-${cell.x}-${cell.y}`);
-        const crossDown = document.getElementById(`crossdown-${cell.x}-${cell.y}`);
+    private _updateCell(x: number, y: number) {
+        const rect = document.getElementById(`cell-${x}-${y}`);
+        const hint = document.getElementById(`hint-${x}-${y}`);
+        const crossUp = document.getElementById(`crossup-${x}-${y}`);
+        const crossDown = document.getElementById(`crossdown-${x}-${y}`);
         if (rect !== null && hint !== null && crossUp !== null && crossDown !== null) {
-            switch(cell.status) {
+            const status = this._grid.getStatus(x, y);
+            switch(status) {
                 case CellStatus.Empty:
                     rect.setAttribute("class", "cellEmpty");
                     hint.setAttribute("class", "hintEmpty");
@@ -143,22 +140,22 @@ export class GridView {
         if (target !== null) {
             const parts = target.id.split("-");
             if (parts.length > 2 && parts[0] === "cell") {
-                const cell = this._grid.getCell(parseInt(parts[1]), parseInt(parts[2]));
-                if (cell !== undefined) {
-                    this._onCellClick(cell);
+                const x = parseInt(parts[1])
+                const y = parseInt(parts[2]);
+                if (!isNaN(x) && !isNaN(y)) {
+                    this._onCellClick(x, y);
                 }
             }
         }
     }
 
-    private _onCellClick(cell: GridCell): void {
-        cell.toggleStatus();
-        this._grid.setCell(cell);
+    private _onCellClick(x: number, y: number): void {
+        this._grid.toggleStatus(x, y);
     }
 
-    private _onCellChanged(cell: GridCell): void {
-        this._updateCell(cell);
-        const block = this._grid.getBlock(cell.x, cell.y);
+    private _onCellChanged(x: number, y: number): void {
+        this._updateCell(x, y);
+        const block = this._grid.getBlock(x, y);
         if (block !== undefined) {
             this._updateBlock(block);
         }

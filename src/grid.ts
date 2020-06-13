@@ -1,4 +1,3 @@
-import { GridCell } from "./grid-cell.js";
 import { GridIterator } from "./grid-iterator.js";
 import { Block } from "./block.js";
 import { BlockIterator } from "./block-iterator.js";
@@ -15,9 +14,9 @@ export class Grid {
     public readonly cellSize: number;
     public static readonly padding = 5;
     private _name: string;
-    private _cells: GridCell[];
+    private _cells: CellStatus[];
     private _blocks: (Block | undefined)[];
-    private _cellChangedHandler: ((cell: GridCell) => void) | undefined ; 
+    private _cellChangedHandler: ((x: number, y: number) => void) | undefined ; 
 
     constructor(width: number, height: number, puzzle: any) {
         this._name = puzzle["name"];
@@ -39,7 +38,7 @@ export class Grid {
                 } else {
                     this._blocks.push(undefined);
                 }
-                this._cells[baseIndex + x] = new GridCell(x, y);
+                this._cells[baseIndex + x] = CellStatus.Unknown;
             }
         }
     }
@@ -56,13 +55,13 @@ export class Grid {
         return ((y + 1) * this.cellSize) + Grid.padding;
     }
 
-    public getCell(x: number, y: number): GridCell | undefined {
-        let cell: GridCell | undefined = undefined;
+    public getStatus(x: number, y: number): CellStatus {
+        let status: CellStatus = CellStatus.Empty;
         if (this.inRange(x, y)) {
             const index = (y * this.numCols) + x;
-            cell = this._cells[index].clone();
+            status = this._cells[index];
         }
-        return cell;
+        return status;
     }
 
     public getBlock(x: number, y: number): Block | undefined {
@@ -74,12 +73,30 @@ export class Grid {
         return block;
     }
 
-    public setCell(cell: GridCell): void {
-        const index = (cell.y * this.numCols) + cell.x;
-        this._cells[index] = cell;
+    public setStatus(x: number, y: number, value: CellStatus): void {
+        const index = (y * this.numCols) + x;
+        this._cells[index] = value;
         if (this._cellChangedHandler !== undefined) {
-            this._cellChangedHandler(cell);
+            this._cellChangedHandler(x, y);
         }
+    }
+
+    public toggleStatus(x: number, y: number): CellStatus {
+        let newStatus: CellStatus = CellStatus.Unknown;
+        const oldStatus = this.getStatus(x, y);
+        switch(oldStatus) {
+            case CellStatus.Unknown:
+                newStatus = CellStatus.Full;
+                break;
+            case CellStatus.Full:
+                newStatus = CellStatus.Empty;
+                break;
+            case CellStatus.Empty:
+                newStatus = CellStatus.Unknown;
+                break;
+        }
+        this.setStatus(x, y, newStatus);
+        return newStatus;
     }
 
     public checkErrors(): number {
@@ -89,11 +106,8 @@ export class Grid {
             const oldError = block.error;
             block.checkForError();
             const newError = block.error;
-            if (oldError !== newError && this._cellChangedHandler) {
-                const cell = this.getCell(block.x, block.y);
-                if (cell !== undefined) {
-                    this._cellChangedHandler(cell);
-                }
+            if (oldError !== newError) {
+                this._raiseCellChanged(block.x, block.y);
             }
             if (newError) {
                 numErrors++;
@@ -107,11 +121,11 @@ export class Grid {
         return x >= 0 && x < this.numCols && y >= 0 && y < this.numRows;
     }
 
-    public get cellChangedHandler(): ((cell: GridCell) => void) | undefined {
+    public get cellChangedHandler(): ((x: number, y: number) => void) | undefined {
         return this._cellChangedHandler;
     }
 
-    public registerChangeHandler(handler: (cell: GridCell) => void) {
+    public registerChangeHandler(handler: (x: number, y: number) => void) {
         this._cellChangedHandler = handler;
     }
 
@@ -122,9 +136,15 @@ export class Grid {
             block.error = false;
         });
         const iterator = new GridIterator(this);
-        iterator.forEach(cell => {
-            cell.status = CellStatus.Unknown;
-            this.setCell(cell);
+        iterator.forEach((x, y) => {
+            this.setStatus(x, y, CellStatus.Unknown);
+            this._raiseCellChanged(x, y);
         });
+    }
+
+    private _raiseCellChanged(x: number, y: number): void {
+        if (this._cellChangedHandler !== undefined) {
+            this._cellChangedHandler(x, y);
+        }
     }
 }
