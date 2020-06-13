@@ -1,5 +1,6 @@
 import { CellStatus, Grid } from "./grid.js";
 import { GridCell } from "./grid-cell.js";
+import { Block } from "./block.js";
 
 export class GridView {
     private _svg: SVGElement;
@@ -20,9 +21,13 @@ export class GridView {
         for (let y = 0; y < this._grid.numRows; y++) {
             for (let x = 0; x < this._grid.numCols; x++) {
                 const cell = this._grid.getCell(x, y);
+                const block = this._grid.getBlock(x, y);
                 if (cell !== undefined) {
                     this._drawCell(x, y);
                     this._updateCell(cell);
+                }
+                if (block !== undefined) {
+                    this._updateBlock(block);
                 }
             }
         }
@@ -55,21 +60,23 @@ export class GridView {
                     crossDown.setAttribute("class", "crossUnknown");
                     break;
             }
-            if (cell.applied) {
+        }
+    }
+
+    private _updateBlock(block: Block): void {
+        const hint = document.getElementById(`hint-${block.x}-${block.y}`);
+        if (hint != null) {
+            if (block.applied) {
                 hint.classList.add("applied");
             } else {
                 hint.classList.remove("applied");
             }
-            if (cell.error) {
+            if (block.error) {
                 hint.classList.add("hintError");
             } else {
                 hint.classList.remove("hintError");
             }
-            if (cell.hint >= 0) {
-                hint.textContent = `${cell.hint}`;
-            } else {
-                hint.textContent = " ";
-            }
+            hint.textContent = `${block.hint}`;
         }
     }
 
@@ -151,5 +158,9 @@ export class GridView {
 
     private _onCellChanged(cell: GridCell): void {
         this._updateCell(cell);
+        const block = this._grid.getBlock(cell.x, cell.y);
+        if (block !== undefined) {
+            this._updateBlock(block);
+        }
     }
 }

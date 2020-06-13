@@ -1,19 +1,19 @@
 import { Grid } from "./grid.js";
-import { GridCell } from "./grid-cell.js";
+import { Block } from "./block.js";
 
-export class GridIterator {
+export class BlockIterator {
     private _grid: Grid;
 
     constructor(grid: Grid) {
         this._grid = grid;
     }
 
-    public forEach(cb: (cell: GridCell) => void): void {
+    public forEach(cb: (item: Block) => void): void {
         for (let y = 0; y < this._grid.numRows; y++) {
             for(let x = 0; x < this._grid.numCols; x++) {
-                const cell = this._grid.getCell(x, y);
-                if (cell !== undefined) {
-                    cb(cell);
+                const block = this._grid.getBlock(x, y);
+                if (block !== undefined) {
+                    cb(block);
                 }
             }
         }        

@@ -8,7 +8,6 @@ class SaveGameCell {
 
     public static fromCell(cell: GridCell): SaveGameCell {
         const game = new SaveGameCell();
-        game.applied = cell.applied;
         game.status = cell.status;
         return game;
     }
@@ -22,7 +21,7 @@ export class SaveGame {
         const game = new SaveGame();
         game.name = grid.name;
         const iterator = new GridIterator(grid);
-        iterator.foreach(cell => {
+        iterator.forEach(cell => {
             game.cells.push(SaveGameCell.fromCell(cell));
         });
         // Keep compiler happy
@@ -42,7 +41,6 @@ export class SaveGame {
                         const gridCell = grid.getCell(x, y);
                         const gameCell = game.cells[i];
                         if (gridCell !== undefined) {
-                            gridCell.applied = gameCell.applied;
                             gridCell.status = gameCell.status;
                             grid.setCell(gridCell);
                         }

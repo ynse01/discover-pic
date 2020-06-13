@@ -3,22 +3,12 @@ import { CellStatus } from "./grid.js";
 export class GridCell {
     public readonly x: number;
     public readonly y: number;
-    public readonly hint: number;
     public status: CellStatus;
-    public applied: boolean;
-    public error: boolean;
 
-    constructor(x: number, y: number, hint: number) {
+    constructor(x: number, y: number) {
         this.x = x;
         this.y = y;
-        if (isNaN(hint)) {
-            this.hint = -1;
-        } else {
-            this.hint = hint;
-        }
         this.status = CellStatus.Unknown;
-        this.applied = false;
-        this.error = false;
     }
 
     public toggleStatus(): CellStatus {
@@ -40,8 +30,7 @@ export class GridCell {
     }
 
     public clone(): GridCell {
-        const clone = new GridCell(this.x, this.y, this.hint);
-        clone.applied = this.applied;
+        const clone = new GridCell(this.x, this.y);
         clone.status = this.status;
         return clone;
     }

@@ -1,7 +1,7 @@
 import { GridCell } from "./grid-cell.js";
-import { MicroIterator } from "./micro-iterator.js";
 import { GridIterator } from "./grid-iterator.js";
-import { MicroSolver } from "./micro-solver.js";
+import { Block } from "./block.js";
+import { BlockIterator } from "./block-iterator.js";
 
 export enum CellStatus {
     Unknown = 0,
@@ -16,6 +16,7 @@ export class Grid {
     public static readonly padding = 5;
     private _name: string;
     private _cells: GridCell[];
+    private _blocks: (Block | undefined)[];
     private _cellChangedHandler: ((cell: GridCell) => void) | undefined ; 
 
     constructor(width: number, height: number, puzzle: any) {
@@ -26,13 +27,19 @@ export class Grid {
         const cellHeight = (height - 2 * Grid.padding) / (this.numRows + 2);
         this.cellSize = Math.min(cellWidth, cellHeight);
         this._cells = [];
+        this._blocks = [];
         const rows = <string[]>puzzle["rows"];
         for (let y = 0; y < this.numRows; y++) {
             const row = Array.from(rows[y]);
             const baseIndex = y * this.numCols;
             for (let x = 0; x < this.numCols; x++) {
                 const hint = parseInt(row[x]);
-                this._cells[baseIndex + x] = new GridCell(x, y, hint);
+                if (!isNaN(hint)) {
+                    this._blocks.push(new Block(this, x, y, hint));
+                } else {
+                    this._blocks.push(undefined);
+                }
+                this._cells[baseIndex + x] = new GridCell(x, y);
             }
         }
     }
@@ -58,6 +65,15 @@ export class Grid {
         return cell;
     }
 
+    public getBlock(x: number, y: number): Block | undefined {
+        let block: Block | undefined = undefined;
+        if (this.inRange(x, y)) {
+            const index = (y * this.numCols) + x;
+            block = this._blocks[index];
+        }
+        return block;
+    }
+
     public setCell(cell: GridCell): void {
         const index = (cell.y * this.numCols) + cell.x;
         this._cells[index] = cell;
@@ -66,23 +82,21 @@ export class Grid {
         }
     }
 
-    public checkApplied(cell: GridCell): void {
-        cell.applied = this._isApplied(cell);
-        this.setCell(cell);
-    }
-
     public checkErrors(): number {
         let numErrors = 0;
-        const iterator = new GridIterator(this);
-        iterator.foreach(cell => {
-            if (cell.hint >= 0) {
-                const solver = new MicroSolver(this, cell.x, cell.y);
-                const ok = solver.checkHint();
-                cell.error = !ok;
-                if (!ok) {
-                    numErrors++;
+        const iterator = new BlockIterator(this);
+        iterator.forEach(block => {
+            const oldError = block.error;
+            block.checkForError();
+            const newError = block.error;
+            if (oldError !== newError && this._cellChangedHandler) {
+                const cell = this.getCell(block.x, block.y);
+                if (cell !== undefined) {
+                    this._cellChangedHandler(cell);
                 }
-                this.setCell(cell);
+            }
+            if (newError) {
+                numErrors++;
             }
         });
         console.log(`Found ${numErrors} errors.`);
@@ -102,20 +116,15 @@ export class Grid {
     }
 
     public clearGame(): void {
+        const blocks = new BlockIterator(this);
+        blocks.forEach(block => {
+            block.applied = false;
+            block.error = false;
+        });
         const iterator = new GridIterator(this);
-        iterator.foreach(cell => {
-            cell.applied = false;
+        iterator.forEach(cell => {
             cell.status = CellStatus.Unknown;
             this.setCell(cell);
         });
-    }
-
-    private _isApplied(cell: GridCell): boolean {
-        let isApplied = true;
-        const iterator = new MicroIterator(this, cell.x, cell.y);
-        iterator.foreach(cell => {
-            isApplied = isApplied && (cell.status !== CellStatus.Unknown);
-        });
-        return isApplied;
     }
 }

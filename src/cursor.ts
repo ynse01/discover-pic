@@ -82,11 +82,12 @@ export class Cursor {
                 }
                 break;
             case " ":
-                const cell = this._grid.getCell(this._xPos, this._yPos)
-                if (cell !== undefined && cell.hint >= 0) {
-                    cell.applied = true;
+                const cell = this._grid.getCell(this._xPos, this._yPos);
+                const block = this._grid.getBlock(this._xPos, this._yPos);
+                if (cell !== undefined && block !== undefined) {
+                    block.applied = true;
                     this._grid.setCell(cell);
-                    const status = (cell.hint > 4) ? CellStatus.Full : CellStatus.Empty;
+                    const status = (block.hint > 4) ? CellStatus.Full : CellStatus.Empty;
                     this._setUnknownCells(status);
                 }
                 break;
@@ -96,7 +97,7 @@ export class Cursor {
 
     private _setUnknownCells(status: CellStatus) {
         const iterator = new MicroIterator(this._grid, this._xPos, this._yPos);
-        iterator.foreach((cell: GridCell) => {
+        iterator.forEach((cell: GridCell) => {
             if (cell.status === CellStatus.Unknown) {
                 cell.status = status;
                 this._grid.setCell(cell);

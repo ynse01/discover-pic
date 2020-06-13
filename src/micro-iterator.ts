@@ -12,7 +12,7 @@ export class MicroIterator {
         this.y = y;
     }
 
-    public foreach(cb: (cell: GridCell) => void): void {
+    public forEach(cb: (cell: GridCell) => void): void {
         for (let y = -1; y <= 1; y++) {
             for(let x = -1; x <= 1; x++) {
                 const cell = this._grid.getCell(this.x + x, this.y + y);
