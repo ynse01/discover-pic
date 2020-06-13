@@ -9,22 +9,22 @@ export class GridView {
     drawGrid() {
         for (let y = 0; y < this._grid.numRows; y++) {
             for (let x = 0; x < this._grid.numCols; x++) {
-                const cell = this._grid.getCell(x, y);
-                if (cell !== undefined) {
-                    this._drawCell(x, y);
-                    this._updateCellStatus(cell);
-                    this._updateCellContent(cell);
+                this._drawCell(x, y);
+                this._updateCell(x, y);
+                const block = this._grid.getBlock(x, y);
+                if (block !== undefined) {
+                    this._updateBlock(block);
                 }
             }
         }
     }
-    _updateCellStatus(cell) {
-        const rect = document.getElementById(`cell-${cell.x}-${cell.y}`);
-        const hint = document.getElementById(`hint-${cell.x}-${cell.y}`);
-        const crossUp = document.getElementById(`crossup-${cell.x}-${cell.y}`);
-        const crossDown = document.getElementById(`crossdown-${cell.x}-${cell.y}`);
+    _updateCell(x, y) {
+        const rect = document.getElementById(`cell-${x}-${y}`);
+        const hint = document.getElementById(`hint-${x}-${y}`);
+        const crossUp = document.getElementById(`crossup-${x}-${y}`);
+        const crossDown = document.getElementById(`crossdown-${x}-${y}`);
         if (rect !== null && hint !== null && crossUp !== null && crossDown !== null) {
-            const status = cell.status;
+            const status = this._grid.getStatus(x, y);
             switch (status) {
                 case CellStatus.Empty:
                     rect.setAttribute("class", "cellEmpty");
@@ -48,28 +48,22 @@ export class GridView {
             }
         }
     }
-    _updateCellApplied(cell) {
-        const element = document.getElementById(`hint-${cell.x}-${cell.y}`);
-        if (element !== null && cell !== undefined) {
-            const isApplied = cell.applied;
-            if (isApplied) {
-                element.classList.add("applied");
+    _updateBlock(block) {
+        const hint = document.getElementById(`hint-${block.x}-${block.y}`);
+        if (hint != null) {
+            if (block.applied) {
+                hint.classList.add("applied");
             }
             else {
-                element.classList.remove("applied");
+                hint.classList.remove("applied");
             }
-        }
-    }
-    _updateCellContent(cell) {
-        const element = document.getElementById(`hint-${cell.x}-${cell.y}`);
-        if (element !== null && cell !== undefined) {
-            const hint = cell.hint;
-            if (hint >= 0) {
-                element.textContent = `${hint}`;
+            if (block.error) {
+                hint.classList.add("hintError");
             }
             else {
-                element.textContent = " ";
+                hint.classList.remove("hintError");
             }
+            hint.textContent = `${block.hint}`;
         }
     }
     _drawCell(x, y) {
@@ -131,21 +125,23 @@ export class GridView {
         if (target !== null) {
             const parts = target.id.split("-");
             if (parts.length > 2 && parts[0] === "cell") {
-                const cell = this._grid.getCell(parseInt(parts[1]), parseInt(parts[2]));
-                if (cell !== undefined) {
-                    this._onCellClick(cell);
+                const x = parseInt(parts[1]);
+                const y = parseInt(parts[2]);
+                if (!isNaN(x) && !isNaN(y)) {
+                    this._onCellClick(x, y);
                 }
             }
         }
     }
-    _onCellClick(cell) {
-        cell.toggleStatus();
-        this._updateCellStatus(cell);
+    _onCellClick(x, y) {
+        this._grid.toggleStatus(x, y);
     }
-    _onCellChanged(cell) {
-        this._updateCellStatus(cell);
-        this._updateCellContent(cell);
-        this._updateCellApplied(cell);
+    _onCellChanged(x, y) {
+        this._updateCell(x, y);
+        const block = this._grid.getBlock(x, y);
+        if (block !== undefined) {
+            this._updateBlock(block);
+        }
     }
 }
 GridView.svgNS = 'http://www.w3.org/2000/svg';

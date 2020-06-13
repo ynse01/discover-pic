@@ -21,14 +21,28 @@ export class DiscoverThePicture {
             this._grid = new Grid(width, height, puzzle);
             this.loadSavedGame();
             new GridView(svg, this._grid);
-            new Cursor(svg, this._grid);
+            this._cursor = new Cursor(svg, this._grid);
         });
+    }
+    toggleCursor() {
+        let visibility = false;
+        const cursor = this._cursor;
+        if (cursor !== undefined) {
+            cursor.visibility = !cursor.visibility;
+            visibility = cursor.visibility;
+        }
+        return visibility;
     }
     saveGame() {
         if (this._grid !== undefined) {
             const game = SaveGame.fromGrid(this._grid);
             const json = JSON.stringify(game);
             window.localStorage.setItem(this._grid["name"], json);
+        }
+    }
+    check() {
+        if (this._grid !== undefined) {
+            this._grid.checkErrors();
         }
     }
     clear() {
@@ -49,8 +63,11 @@ export class DiscoverThePicture {
     }
     loadSavedGame() {
         if (this._grid !== undefined) {
-            const saveGame = window.localStorage.getItem(this._grid.name);
-            SaveGame.loadGame(saveGame, this._grid);
+            const savedString = window.localStorage.getItem(this._grid.name);
+            if (savedString !== null) {
+                const saveGame = JSON.parse(savedString);
+                SaveGame.loadGame(saveGame, this._grid);
+            }
         }
     }
 }

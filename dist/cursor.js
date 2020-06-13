@@ -1,11 +1,12 @@
+import { CellStatus } from "./grid.js";
 import { GridView } from "./grid-view.js";
-import { MicroSolver } from "./micro-solver.js";
+import { MicroIterator } from "./micro-iterator.js";
 export class Cursor {
     constructor(svg, grid) {
         this._xPos = 1;
         this._yPos = 1;
         this._grid = grid;
-        this._visibility = false;
+        this._visibility = true;
         this._cursor = this._drawCursor();
         svg.appendChild(this._cursor);
         this._subscribe();
@@ -14,6 +15,12 @@ export class Cursor {
         return this._visibility;
     }
     set visibility(value) {
+        if (value) {
+            this._cursor.classList.remove("cursorHide");
+        }
+        else {
+            this._cursor.classList.add("cursorHide");
+        }
         this._visibility = value;
     }
     _drawCursor() {
@@ -28,10 +35,9 @@ export class Cursor {
         return cursor;
     }
     _moveCursor() {
-        const cursor = document.getElementById("cursor");
-        if (cursor !== null) {
-            cursor.setAttribute("x", `${this._grid.getXPos(this._xPos - 1)}`);
-            cursor.setAttribute("y", `${this._grid.getYPos(this._yPos - 1)}`);
+        if (this._cursor !== undefined) {
+            this._cursor.setAttribute("x", `${this._grid.getXPos(this._xPos - 1)}`);
+            this._cursor.setAttribute("y", `${this._grid.getYPos(this._yPos - 1)}`);
         }
     }
     _subscribe() {
@@ -65,13 +71,25 @@ export class Cursor {
                 }
                 break;
             case " ":
-                const solver = new MicroSolver(this._grid, this._xPos, this._yPos);
-                if (solver.applyHint()) {
-                    this._grid.getCell(this._xPos, this._yPos).applied = true;
+                const block = this._grid.getBlock(this._xPos, this._yPos);
+                if (block !== undefined) {
+                    const status = (block.hint > 4) ? CellStatus.Full : CellStatus.Empty;
+                    this._setUnknownCells(status);
+                    block.applied = true;
+                    // Force change handler to run.
+                    this._grid.setStatus(this._xPos, this._yPos, this._grid.getStatus(this._xPos, this._yPos));
                 }
                 break;
         }
         this._moveCursor();
+    }
+    _setUnknownCells(status) {
+        const iterator = new MicroIterator(this._xPos, this._yPos);
+        iterator.forEach((x, y) => {
+            if (this._grid.getStatus(x, y) === CellStatus.Unknown) {
+                this._grid.setStatus(x, y, status);
+            }
+        });
     }
 }
 //# sourceMappingURL=cursor.js.map
