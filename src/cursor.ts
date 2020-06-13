@@ -83,11 +83,11 @@ export class Cursor {
             case " ":
                 const block = this._grid.getBlock(this._xPos, this._yPos);
                 if (block !== undefined) {
+                    const status = (block.hint > 4) ? CellStatus.Full : CellStatus.Empty;
+                    this._setUnknownCells(status);
                     block.applied = true;
                     // Force change handler to run.
                     this._grid.setStatus(this._xPos, this._yPos, this._grid.getStatus(this._xPos, this._yPos));
-                    const status = (block.hint > 4) ? CellStatus.Full : CellStatus.Empty;
-                    this._setUnknownCells(status);
                 }
                 break;
         }
