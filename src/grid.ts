@@ -107,7 +107,8 @@ export class Grid {
             block.checkForError();
             const newError = block.error;
             if (oldError !== newError) {
-                this._raiseCellChanged(block.x, block.y);
+                // Force cell changed
+                this.setStatus(block.x, block.y, this.getStatus(block.x, block.y));
             }
             if (newError) {
                 numErrors++;
@@ -138,13 +139,6 @@ export class Grid {
         const iterator = new GridIterator(this);
         iterator.forEach((x, y) => {
             this.setStatus(x, y, CellStatus.Unknown);
-            this._raiseCellChanged(x, y);
         });
-    }
-
-    private _raiseCellChanged(x: number, y: number): void {
-        if (this._cellChangedHandler !== undefined) {
-            this._cellChangedHandler(x, y);
-        }
     }
 }
