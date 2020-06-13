@@ -14,10 +14,18 @@
         </script>
     </head>
     <body onLoad="init();">
-        <button onClick="discover.clear()">Clear</button>
-        <button onClick="discover.saveGame()">Save</button>
-        <button onClick="discover.toggleCursor()">Cursor</button>
-        <button onClick="discover.check()">Check</button>
-        <svg id="grid" width="800" height="800" viewBox="0 0 800 800"></svg>
+        <div id="tools">
+            <button disabled onClick="discover.zoomIn()">Zoom In</button>
+            <button disabled onClick="discover.zoomOut()">Zoom In</button>
+            <button disabled onClick="discover.undo()">Undo</button>
+            <button disabled onClick="discover.redo()">Redo</button>
+            <button onClick="discover.toggleCursor()">Cursor</button>
+            <button onClick="discover.clear()">Clear</button>
+            <button onClick="discover.check()">Check</button>
+            <button onClick="discover.saveGame()">Save</button>
+        </div>
+        <div id="gameArea">
+            <svg id="grid" width="800" height="800" viewBox="0 0 800 800"></svg>
+        </div>
     </body>
 </html>
