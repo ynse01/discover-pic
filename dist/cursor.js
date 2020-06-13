@@ -1,6 +1,4 @@
-import { CellStatus } from "./grid.js";
 import { GridView } from "./grid-view.js";
-import { MicroIterator } from "./micro-iterator.js";
 export class Cursor {
     constructor(svg, grid) {
         this._xPos = 1;
@@ -73,23 +71,13 @@ export class Cursor {
             case " ":
                 const block = this._grid.getBlock(this._xPos, this._yPos);
                 if (block !== undefined) {
-                    const status = (block.hint > 4) ? CellStatus.Full : CellStatus.Empty;
-                    this._setUnknownCells(status);
-                    block.applied = true;
+                    block.applyHint();
                     // Force change handler to run.
                     this._grid.setStatus(this._xPos, this._yPos, this._grid.getStatus(this._xPos, this._yPos));
                 }
                 break;
         }
         this._moveCursor();
-    }
-    _setUnknownCells(status) {
-        const iterator = new MicroIterator(this._xPos, this._yPos);
-        iterator.forEach((x, y) => {
-            if (this._grid.getStatus(x, y) === CellStatus.Unknown) {
-                this._grid.setStatus(x, y, status);
-            }
-        });
     }
 }
 //# sourceMappingURL=cursor.js.map
