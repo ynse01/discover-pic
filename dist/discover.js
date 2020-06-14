@@ -3,11 +3,13 @@ import { GridView } from "./grid-view.js";
 import { Cursor } from "./cursor.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
+import { Solver } from "./solver.js";
 export class DiscoverThePicture {
     constructor(gridId) {
         this._id = gridId;
     }
     load(url) {
+        console.log(`Loading puzzle from ${url}`);
         const element = document.getElementById(this._id);
         if (element == null) {
             throw new Error(`Unable to find SVG element with ID: ${this._id}.`);
@@ -49,6 +51,12 @@ export class DiscoverThePicture {
     clear() {
         if (this._grid !== undefined) {
             this._grid.clearGame();
+        }
+    }
+    solve() {
+        if (this._grid !== undefined) {
+            const solver = new Solver(this._grid);
+            solver.solve();
         }
     }
     loadPuzzle(url, cb) {

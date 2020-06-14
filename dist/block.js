@@ -1,5 +1,6 @@
 import { CellStatus } from "./grid.js";
 import { MicroIterator } from "./micro-iterator.js";
+import { NeighborIterator } from "./neighbor-iterator.js";
 class MicroStatistics {
     constructor() {
         this.numEmpty = 0;
@@ -29,6 +30,7 @@ class MicroStatistics {
 }
 export class Block {
     constructor(grid, x, y, hint) {
+        this._neighbors = undefined;
         this._grid = grid;
         this.x = x;
         this.y = y;
@@ -36,38 +38,20 @@ export class Block {
         this.applied = false;
         this.error = false;
     }
-    applyHint() {
-        this.applied = true;
-        const hint = this.hint;
-        switch (hint) {
-            case 0:
-                this._setAllCells(CellStatus.Empty);
-                break;
-            case 9:
-                this._setAllCells(CellStatus.Full);
-                break;
-            case 8:
-            case 7:
-            case 6:
-            case 5:
-            case 4:
-            case 3:
-            case 2:
-            case 1:
-                const stats = this._getStatistics();
-                if (stats.numFull + stats.numUnknown === hint) {
-                    this._setUnknownCells(CellStatus.Full);
-                }
-                else if (stats.numFull === hint) {
-                    this._setUnknownCells(CellStatus.Empty);
-                }
-                else {
-                    const status = (this.hint > 4) ? CellStatus.Full : CellStatus.Empty;
-                    this._setUnknownCells(status);
-                }
-                break;
-            default:
-                break;
+    applyHint(force = true) {
+        const stats = this._getStatistics();
+        if (stats.numFull + stats.numUnknown === this.hint) {
+            this._setUnknownCells(CellStatus.Full);
+            this.applied = true;
+        }
+        else if (stats.numFull === this.hint) {
+            this._setUnknownCells(CellStatus.Empty);
+            this.applied = true;
+        }
+        else if (force) {
+            const status = (this.hint > 4) ? CellStatus.Full : CellStatus.Empty;
+            this._setUnknownCells(status);
+            this.applied = true;
         }
     }
     checkForError() {
@@ -85,10 +69,17 @@ export class Block {
         this.applied = isApplied;
         return isApplied;
     }
-    _setAllCells(status) {
-        const iterator = new MicroIterator(this.x, this.y);
-        iterator.forEach((x, y) => {
-            this._grid.setStatus(x, y, status);
+    get neighbors() {
+        return this._neighbors;
+    }
+    findNeighbors() {
+        this._neighbors = [];
+        const iterator = new NeighborIterator(this._grid, this.x, this.y);
+        iterator.forEach(block => {
+            // Skip ourself
+            if (block.x !== this.x && block.y !== this.y) {
+                this._neighbors.push(block);
+            }
         });
     }
     _setUnknownCells(status) {
