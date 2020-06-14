@@ -76,12 +76,13 @@ export class Block {
         const tooLittle = stats.numEmpty > (9 - this.hint);
         this.error = tooMany || tooLittle;
     }
-    checkApplied(x, y) {
+    checkApplied() {
         let isApplied = true;
-        const iterator = new MicroIterator(x, y);
+        const iterator = new MicroIterator(this.x, this.y);
         iterator.forEach((x, y) => {
             isApplied = isApplied && (this._grid.getStatus(x, y) !== CellStatus.Unknown);
         });
+        this.applied = isApplied;
         return isApplied;
     }
     _setAllCells(status) {
