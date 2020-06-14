@@ -37,10 +37,13 @@ export class Solver {
         return count;
     }
 
-    private _countOpenBlocks(): number {
+    private _countOpenBlocks(checkFirst: boolean = false): number {
         let count = 0;
         const iterator = new BlockIterator(this._grid);
         iterator.forEach(block => {
+            if (checkFirst) {
+                block.checkApplied();
+            }
             if (!block.applied) {
                 count++;
             }

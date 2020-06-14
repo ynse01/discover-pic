@@ -1,5 +1,6 @@
 import { Grid, CellStatus } from "./grid.js";
 import { MicroIterator } from "./micro-iterator.js";
+import { NeighborIterator } from "./neighbor-iterator.js";
 
 class MicroStatistics {
     public numEmpty: number = 0;
@@ -37,6 +38,7 @@ export class Block {
     public readonly hint: number;
     public applied: boolean;
     public error: boolean;
+    private _neighbors: Block[] | undefined = undefined;
 
     constructor(grid: Grid, x: number, y: number, hint: number) {
         this._grid = grid;
@@ -77,6 +79,21 @@ export class Block {
         });
         this.applied = isApplied;
         return isApplied;
+    }
+
+    public get neighbors(): Block[] | undefined {
+        return this._neighbors;
+    }
+
+    public findNeighbors(): void {
+        this._neighbors = [];
+        const iterator = new NeighborIterator(this._grid, this.x, this.y);
+        iterator.forEach(block => {
+            // Skip ourself
+            if (block.x !== this.x && block.y !== this.y) {
+                this._neighbors!.push(block);
+            }
+        });
     }
 
     private _setUnknownCells(status: CellStatus) {
