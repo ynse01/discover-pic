@@ -1,7 +1,5 @@
 {
     "name": "First puzzle",
-    "numCols": 45,
-    "numRows": 35,
     "rows": [
         " 356   55 4  1 244 4 4 3  3 3 44    2 4 55   ",
         "    8      6        7 5       4   3  4 66   4",

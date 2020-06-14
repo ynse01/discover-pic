@@ -1,7 +1,5 @@
 {
     "name": "Very hard",
-    "numCols": 45,
-    "numRows": 35,
     "rows": [
         " 33 33   3  4 3 2    4 5 5 5          2 2   2",
         "        6 6    3   4   6      65  2 0     4  ",
