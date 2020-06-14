@@ -61,3 +61,16 @@
 .cursorHide {
     visibility: hidden;
 }
+
+.body {
+    background-color: rgb(255, 254, 244);
+}
+
+.toolbar {
+    padding-left: 20px;
+    padding-top: 10px;
+}
+
+.tool {
+    padding: 5px;
+}
