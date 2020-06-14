@@ -10,16 +10,13 @@ export var CellStatus;
 export class Grid {
     constructor(width, height, puzzle) {
         this._name = puzzle["name"];
-        this.numCols = puzzle["numCols"];
-        this.numRows = puzzle["numRows"];
-        const cellWidth = (width - 2 * Grid.padding) / (this.numCols + 2);
-        const cellHeight = (height - 2 * Grid.padding) / (this.numRows + 2);
-        this.cellSize = Math.min(cellWidth, cellHeight);
         this._cells = [];
         this._blocks = [];
+        this.numCols = 0;
         const rows = puzzle["rows"];
-        for (let y = 0; y < this.numRows; y++) {
+        for (let y = 0; y < rows.length; y++) {
             const row = Array.from(rows[y]);
+            this.numCols = row.length;
             const baseIndex = y * this.numCols;
             for (let x = 0; x < this.numCols; x++) {
                 const hint = parseInt(row[x]);
@@ -32,6 +29,10 @@ export class Grid {
                 this._cells[baseIndex + x] = CellStatus.Unknown;
             }
         }
+        this.numRows = rows.length;
+        const cellWidth = (width - 2 * Grid.padding) / (this.numCols + 2);
+        const cellHeight = (height - 2 * Grid.padding) / (this.numRows + 2);
+        this.cellSize = Math.min(cellWidth, cellHeight);
     }
     get name() {
         return this._name;
