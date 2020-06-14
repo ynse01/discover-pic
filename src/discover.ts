@@ -3,6 +3,7 @@ import { GridView } from "./grid-view.js";
 import { Cursor } from "./cursor.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
+import { Solver } from "./solver.js";
 
 export class DiscoverThePicture {
     private _id: string;
@@ -59,6 +60,13 @@ export class DiscoverThePicture {
     public clear(): void {
         if (this._grid !== undefined) {
             this._grid.clearGame();
+        }
+    }
+
+    public solve(): void {
+        if (this._grid !== undefined) {
+            const solver = new Solver(this._grid);
+            solver.solve();
         }
     }
 
