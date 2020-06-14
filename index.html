@@ -10,7 +10,12 @@
             var discover;
             function init() {
                 discover = new DiscoverThePicture("grid");
-                discover.load("./puzzles/first.json");
+                var puzzle = "first";
+                var query = window.location.search;
+                if (!!query) {
+                    puzzle = query.substring(1);
+                }
+                discover.load("./puzzles/" + puzzle + ".json");
             }
         </script>
     </head>

@@ -15,6 +15,7 @@ export class DiscoverThePicture {
     }
 
     public load(url: string): void {
+        console.log(`Loading puzzle from ${url}`);
         const element = document.getElementById(this._id);
         if (element == null) {
             throw new Error(`Unable to find SVG element with ID: ${this._id}.`);
