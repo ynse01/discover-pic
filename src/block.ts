@@ -47,36 +47,18 @@ export class Block {
         this.error = false;
     }
 
-    public applyHint(): void {
-        this.applied = true;
-        const hint = this.hint;
-        switch(hint) {
-            case 0:
-                this._setAllCells(CellStatus.Empty);
-                break;
-            case 9:
-                this._setAllCells(CellStatus.Full);
-                break;
-            case 8:
-            case 7:
-            case 6:
-            case 5:
-            case 4:
-            case 3:
-            case 2:
-            case 1:
-                const stats = this._getStatistics();
-                if (stats.numFull + stats.numUnknown === hint) {
-                    this._setUnknownCells(CellStatus.Full);
-                } else if (stats.numFull === hint) {
-                    this._setUnknownCells(CellStatus.Empty);
-                } else {
-                    const status = (this.hint > 4) ? CellStatus.Full : CellStatus.Empty;
-                    this._setUnknownCells(status);
-                }
-                break;
-            default:
-                break;
+    public applyHint(force: boolean = true): void {
+        const stats = this._getStatistics();
+        if (stats.numFull + stats.numUnknown === this.hint) {
+            this._setUnknownCells(CellStatus.Full);
+            this.applied = true;
+        } else if (stats.numFull === this.hint) {
+            this._setUnknownCells(CellStatus.Empty);
+            this.applied = true;
+        } else if (force) {
+            const status = (this.hint > 4) ? CellStatus.Full : CellStatus.Empty;
+            this._setUnknownCells(status);
+            this.applied = true;
         }
     }
 
@@ -95,13 +77,6 @@ export class Block {
         });
         this.applied = isApplied;
         return isApplied;
-    }
-
-    private _setAllCells(status: CellStatus) {
-        const iterator = new MicroIterator(this.x, this.y);
-        iterator.forEach((x: number, y: number) => {
-            this._grid.setStatus(x, y, status);
-        });
     }
 
     private _setUnknownCells(status: CellStatus) {
