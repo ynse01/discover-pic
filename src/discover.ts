@@ -2,6 +2,7 @@ import { Grid } from "./grid.js";
 import { GridView } from "./grid-view.js";
 import { Cursor } from "./cursor.js";
 import { SaveGame } from "./save-game.js";
+import { BlockIterator } from "./block-iterator.js";
 
 export class DiscoverThePicture {
     private _id: string;
@@ -79,7 +80,17 @@ export class DiscoverThePicture {
             if (savedString !== null) {
                 const saveGame = JSON.parse(savedString);
                 SaveGame.loadGame(saveGame, this._grid);
+                this.checkApplied();
             }
+        }
+    }
+
+    private checkApplied(): void {
+        if (this._grid !== undefined) {
+            const iterator = new BlockIterator(this._grid);
+            iterator.forEach(block => {
+                block.checkApplied();
+            });
         }
     }
 }

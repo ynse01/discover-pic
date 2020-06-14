@@ -87,12 +87,13 @@ export class Block {
         this.error = tooMany || tooLittle;
     }
 
-    public checkApplied(x: number, y: number): boolean {
+    public checkApplied(): boolean {
         let isApplied = true;
-        const iterator = new MicroIterator(x, y);
+        const iterator = new MicroIterator(this.x, this.y);
         iterator.forEach((x: number, y: number) => {
             isApplied = isApplied && (this._grid.getStatus(x, y) !== CellStatus.Unknown);
         });
+        this.applied = isApplied;
         return isApplied;
     }
 
