@@ -1,11 +1,15 @@
 import { Grid } from "./grid.js";
 import { BlockIterator } from "./block-iterator.js";
+import { CommonWithNeighbor } from "./common-with-neighbor.js";
+import { BlockSolutions } from "./block-solutions.js";
 
 export class Solver {
     private _grid: Grid;
+    private _solutions: BlockSolutions[] | undefined;
 
     constructor(grid: Grid) {
         this._grid = grid;
+        this._solutions = undefined;
     }
 
     public solve(): void {
@@ -16,6 +20,16 @@ export class Solver {
             previousCount = count;
             count = this._countOpenBlocks();
         }
+        if (count > 0) {
+            console.log(`Trying harder...`);
+            this._generateBlockSolutions();
+            this._solutions?.forEach(solution => {
+                if (solution.count <= 1) {
+                    console.log(`Block at position (${solution.block.x}, ${solution.block.y}) has ${solution.count} solutions left.`);
+                }
+            });
+            this._commonWithNeighbors();
+        }
         console.log(`${count} hints still open.`);
     }
 
@@ -24,6 +38,28 @@ export class Solver {
         iterator.forEach(block => {
             if (!block.applied) {
                 block.applyHint(false);
+            }
+        });
+    }
+
+    private _generateBlockSolutions() {
+        const iterator = new BlockIterator(this._grid);
+        this._solutions = [];
+        iterator.forEach(block => {
+            if (!block.applied) {
+                const solution = new BlockSolutions(block);
+                solution.elliminateFromGrid(this._grid);
+                this._solutions!.push(solution);
+            }
+        });
+    }
+
+    private _commonWithNeighbors(): void {
+        const iterator = new BlockIterator(this._grid);
+        iterator.forEach(block => {
+            if (!block.applied) {
+                const common = new CommonWithNeighbor(block);
+                common.find();
             }
         });
     }
