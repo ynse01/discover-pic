@@ -28,6 +28,7 @@ export class Solver {
                     console.log(`Block at position (${solution.block.x}, ${solution.block.y}) has ${solution.count} solutions left.`);
                 }
             });
+            this._checkApplied();
             this._commonWithNeighbors();
         }
         console.log(`${count} hints still open.`);
@@ -39,6 +40,13 @@ export class Solver {
             if (!block.applied) {
                 block.applyHint(false);
             }
+        });
+    }
+
+    private _checkApplied(): void {
+        const iterator = new BlockIterator(this._grid);
+        iterator.forEach(block => {
+            block.checkApplied();
         });
     }
 
