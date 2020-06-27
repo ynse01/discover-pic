@@ -5,6 +5,11 @@ import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
 import { Solver } from "./solver.js";
 
+export interface IPuzzle {
+    name: string;
+    rows: string[];
+}
+
 export class Game {
     private _id: string;
     private _grid: Grid | undefined;
@@ -27,7 +32,7 @@ export class Game {
             throw new Error(`SVG Element doesn't have a viewBox.`);
         }
         this.loadPuzzle(url, (puzzle) => {
-            this._grid = new Grid(width, height, puzzle);
+            this._grid = new Grid(width, height, <IPuzzle>puzzle);
             this.loadSavedGame();
             new GridView(svg, this._grid);
             this._cursor = new Cursor(svg, this._grid);    

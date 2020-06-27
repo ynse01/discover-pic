@@ -1,6 +1,7 @@
 import { GridIterator } from "./grid-iterator.js";
 import { Block } from "./block.js";
 import { BlockIterator } from "./block-iterator.js";
+import { IPuzzle } from "./game.js";
 
 export enum CellStatus {
     Unknown = 0,
@@ -18,12 +19,12 @@ export class Grid {
     private _blocks: (Block | undefined)[];
     private _cellChangedHandler: ((x: number, y: number) => void) | undefined ; 
 
-    constructor(width: number, height: number, puzzle: any) {
-        this._name = puzzle["name"];
+    constructor(width: number, height: number, puzzle: IPuzzle) {
+        this._name = puzzle.name;
         this._cells = [];
         this._blocks = [];
         this.numCols = 0;
-        const rows = <string[]>puzzle["rows"];
+        const rows = puzzle.rows;
         for (let y = 0; y < rows.length; y++) {
             const row = Array.from(rows[y]);
             this.numCols = row.length;
