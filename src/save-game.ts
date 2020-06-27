@@ -2,18 +2,34 @@ import { Grid, CellStatus } from "./grid.js";
 import { GridIterator } from "./grid-iterator.js";
 
 export class SaveGame {
-    private name: string | undefined = undefined;
-    private cells: CellStatus[] = [];
+    public name: string | undefined = undefined;
+    public cells: CellStatus[] = [];
+    public numCols: number = 0;
+    public numRows: number = 0;
 
     public static fromGrid(grid: Grid): SaveGame {
         const game = new SaveGame();
         game.name = grid.name;
+        game.numCols = grid.numCols;
+        game.numRows = grid.numRows;
         const iterator = new GridIterator(grid);
         iterator.forEach((x, y) => {
             game.cells.push(grid.getStatus(x, y));
         });
-        // Keep compiler happy
-        game.name;
+        return game;
+    }
+
+    public static fromGenerated(name: string, content: boolean[][]): SaveGame {
+        const game = new SaveGame();
+        game.numRows = content.length - 2;
+        game.numCols = content[0].length - 2;
+        game.name = name;
+        for (let y = 1; y <= game.numRows; y++) {
+            for (let x = 1; x <= game.numCols; x++) {
+                const status = (content[y][x]) ? CellStatus.Full : CellStatus.Empty;
+                game.cells.push(status);
+            }
+        }
         return game;
     }
 

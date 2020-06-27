@@ -1,14 +1,44 @@
 import { Grid } from "./grid.js";
-import { IPuzzle } from "./game.js";
 import { GridView } from "./grid-view.js";
+import { IGame } from "./discover.js";
+import { PuzzleGenerator } from "./puzzle-generator.js";
+import { Solver } from "./solver.js";
+import { SaveGame } from "./save-game.js";
 
 
-export class Editor {
+export class Editor implements IGame {
     private _gridId: string;
     private _grid: Grid | undefined;
 
     constructor(gridId: string) {
         this._gridId = gridId;
+    }
+    
+    public load(_url: string): void {
+        this.generate(45, 35);
+    }
+    
+    public toggleCursor(): boolean {
+        throw new Error("Method not implemented.");
+    }
+    
+    public saveGame(): void {
+        throw new Error("Method not implemented.");
+    }
+    
+    public check(): void {
+        throw new Error("Method not implemented.");
+    }
+    
+    public clear(): void {
+        throw new Error("Method not implemented.");
+    }
+    
+    public solve(): void {
+        if (this._grid !== undefined) {
+            const solver = new Solver(this._grid);
+            solver.solve();
+        }
     }
 
     public generate(columns: number, rows: number): void {
@@ -22,8 +52,10 @@ export class Editor {
         if (width == null || height == null) {
             throw new Error(`SVG Element doesn't have a viewBox.`);
         }
-        const puzzle = this.randomPuzzle(columns, rows);
+        const saveGame = PuzzleGenerator.generateSaveGame(columns, rows);
+        const puzzle = PuzzleGenerator.saveGame2Puzzle(saveGame);
         this._grid = new Grid(width, height, puzzle);
+        SaveGame.loadGame(saveGame, this._grid);
         new GridView(svg, this._grid, this._onCellClick.bind(this));
     }
 
@@ -31,9 +63,5 @@ export class Editor {
         if (this._grid !== undefined) {
             // TODO: Toggle hint
         }
-    }
-
-    private randomPuzzle(_columns: number, _rows: number): IPuzzle {
-        return <IPuzzle>{};
     }
 }

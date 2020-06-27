@@ -1,10 +1,29 @@
 import { Game } from "./game.js";
+import { Editor } from "./editor.js";
+
+export interface IGame {
+    load(url: string): void;
+
+    toggleCursor(): boolean;
+
+    saveGame(): void;
+
+    check(): void;
+
+    clear(): void;
+
+    solve(): void;
+}
 
 export class DiscoverThePicture {
-    private _game: Game;
+    private _game: IGame;
     
-    constructor(gridId: string) {
-        this._game = new Game(gridId);
+    constructor(gridId: string, editMode: boolean = false) {
+        if (editMode) {
+            this._game = new Editor(gridId);
+        } else {
+            this._game = new Game(gridId);
+        }
     }
 
     public load(url: string): void {

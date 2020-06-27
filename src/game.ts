@@ -4,13 +4,14 @@ import { Cursor } from "./cursor.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
 import { Solver } from "./solver.js";
+import { IGame } from "./discover.js";
 
 export interface IPuzzle {
     name: string;
     rows: string[];
 }
 
-export class Game {
+export class Game implements IGame {
     private _id: string;
     private _grid: Grid | undefined;
     private _cursor: Cursor | undefined;
