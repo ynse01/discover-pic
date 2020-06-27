@@ -9,11 +9,11 @@ export var CellStatus;
 })(CellStatus || (CellStatus = {}));
 export class Grid {
     constructor(width, height, puzzle) {
-        this._name = puzzle["name"];
+        this._name = puzzle.name;
         this._cells = [];
         this._blocks = [];
         this.numCols = 0;
-        const rows = puzzle["rows"];
+        const rows = puzzle.rows;
         for (let y = 0; y < rows.length; y++) {
             const row = Array.from(rows[y]);
             this.numCols = row.length;

@@ -1,8 +1,9 @@
 import { CellStatus } from "./grid.js";
 export class GridView {
-    constructor(svg, grid) {
+    constructor(svg, grid, cellClickHandler) {
         this._svg = svg;
         this._grid = grid;
+        this._onCellClickHandler = cellClickHandler;
         this.drawGrid();
         this._grid.registerChangeHandler(this._onCellChanged.bind(this));
     }
@@ -128,13 +129,10 @@ export class GridView {
                 const x = parseInt(parts[1]);
                 const y = parseInt(parts[2]);
                 if (!isNaN(x) && !isNaN(y)) {
-                    this._onCellClick(x, y);
+                    this._onCellClickHandler(x, y);
                 }
             }
         }
-    }
-    _onCellClick(x, y) {
-        this._grid.toggleStatus(x, y);
     }
     _onCellChanged(x, y) {
         this._updateCell(x, y);
