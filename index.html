@@ -9,12 +9,13 @@
         <script>
             var discover;
             function init() {
-                discover = new DiscoverThePicture("grid");
                 var puzzle = "first";
                 var query = window.location.search;
                 if (!!query) {
                     puzzle = query.substring(1);
                 }
+                var editMode = (puzzle === "editor");
+                discover = new DiscoverThePicture("grid", editMode);
                 discover.load("./puzzles/" + puzzle + ".json");
             }
         </script>
