@@ -34,7 +34,7 @@ export class Game {
         this.loadPuzzle(url, (puzzle) => {
             this._grid = new Grid(width, height, <IPuzzle>puzzle);
             this.loadSavedGame();
-            new GridView(svg, this._grid);
+            new GridView(svg, this._grid, this._onCellClick.bind(this));
             this._cursor = new Cursor(svg, this._grid);    
         });
     }
@@ -96,6 +96,12 @@ export class Game {
                 SaveGame.loadGame(saveGame, this._grid);
                 this.checkApplied();
             }
+        }
+    }
+
+    private _onCellClick(x: number, y: number): void {
+        if (this._grid !== undefined) {
+            this._grid.toggleStatus(x, y);
         }
     }
 

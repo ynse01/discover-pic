@@ -4,14 +4,16 @@ import { Block } from "./block.js";
 export class GridView {
     private _svg: SVGElement;
     private _grid: Grid;
+    private _onCellClickHandler: (x: number, y: number) => void;
 
     public static readonly svgNS = 'http://www.w3.org/2000/svg';
     private static readonly fontSizeFactor = 0.8;
     private static readonly fontBaselineFactor = 0.75;
 
-    constructor(svg: SVGElement, grid: Grid) {
+    constructor(svg: SVGElement, grid: Grid, cellClickHandler: (x: number, y: number) => void) {
         this._svg = svg;
         this._grid = grid;
+        this._onCellClickHandler = cellClickHandler;
         this.drawGrid();
         this._grid.registerChangeHandler(this._onCellChanged.bind(this));
     }
@@ -143,14 +145,10 @@ export class GridView {
                 const x = parseInt(parts[1])
                 const y = parseInt(parts[2]);
                 if (!isNaN(x) && !isNaN(y)) {
-                    this._onCellClick(x, y);
+                    this._onCellClickHandler(x, y);
                 }
             }
         }
-    }
-
-    private _onCellClick(x: number, y: number): void {
-        this._grid.toggleStatus(x, y);
     }
 
     private _onCellChanged(x: number, y: number): void {

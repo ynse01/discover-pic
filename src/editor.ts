@@ -24,7 +24,13 @@ export class Editor {
         }
         const puzzle = this.randomPuzzle(columns, rows);
         this._grid = new Grid(width, height, puzzle);
-        new GridView(svg, this._grid);
+        new GridView(svg, this._grid, this._onCellClick.bind(this));
+    }
+
+    private _onCellClick(_x: number, _y: number): void {
+        if (this._grid !== undefined) {
+            // TODO: Toggle hint
+        }
     }
 
     private randomPuzzle(_columns: number, _rows: number): IPuzzle {
