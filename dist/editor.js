@@ -3,9 +3,13 @@ import { GridView } from "./grid-view.js";
 import { PuzzleGenerator } from "./puzzle-generator.js";
 import { Solver } from "./solver.js";
 import { SaveGame } from "./save-game.js";
+import { BlockIterator } from "./block-iterator.js";
 export class Editor {
     constructor(gridId) {
         this._gridId = gridId;
+    }
+    get grid() {
+        return this._grid;
     }
     load(_url) {
         this.generate(45, 35);
@@ -16,11 +20,27 @@ export class Editor {
     saveGame() {
         throw new Error("Method not implemented.");
     }
+    undo() {
+        throw new Error("Method not implemented.");
+    }
+    restorePoint() {
+        throw new Error("Method not implemented.");
+    }
+    redo() {
+        throw new Error("Method not implemented.");
+    }
     check() {
         throw new Error("Method not implemented.");
     }
     clear() {
-        throw new Error("Method not implemented.");
+        if (this._grid !== undefined) {
+            var iterator = new BlockIterator(this._grid);
+            iterator.forEach(block => {
+                if (block.hint < 0) {
+                    this._onCellClick(block.x, block.y);
+                }
+            });
+        }
     }
     solve() {
         if (this._grid !== undefined) {
@@ -43,11 +63,16 @@ export class Editor {
         const puzzle = PuzzleGenerator.saveGame2Puzzle(saveGame);
         this._grid = new Grid(width, height, puzzle);
         SaveGame.loadGame(saveGame, this._grid);
-        new GridView(svg, this._grid, this._onCellClick.bind(this));
+        new GridView(svg, this, this._onCellClick.bind(this));
     }
-    _onCellClick(_x, _y) {
+    _onCellClick(x, y) {
         if (this._grid !== undefined) {
-            // TODO: Toggle hint
+            var block = this._grid.getBlock(x, y);
+            if (block !== undefined) {
+                block.toggleHint();
+                // Force change handler to run.
+                this._grid.setStatus(x, y, this._grid.getStatus(x, y));
+            }
         }
     }
 }

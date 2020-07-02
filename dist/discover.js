@@ -18,6 +18,15 @@ export class DiscoverThePicture {
     saveGame() {
         this._game.saveGame();
     }
+    restorePoint() {
+        this._game.restorePoint();
+    }
+    undo() {
+        this._game.undo();
+    }
+    redo() {
+        this._game.redo();
+    }
     check() {
         this._game.check();
     }

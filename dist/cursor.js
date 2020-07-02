@@ -1,9 +1,9 @@
 import { GridView } from "./grid-view.js";
 export class Cursor {
-    constructor(svg, grid) {
+    constructor(svg, game) {
         this._xPos = 1;
         this._yPos = 1;
-        this._grid = grid;
+        this._game = game;
         this._visibility = true;
         this._cursor = this._drawCursor();
         svg.appendChild(this._cursor);
@@ -23,10 +23,11 @@ export class Cursor {
     }
     _drawCursor() {
         const cursor = document.createElementNS(GridView.svgNS, "rect");
-        cursor.setAttribute("x", `${this._grid.getXPos(this._xPos - 1)}`);
-        cursor.setAttribute("y", `${this._grid.getYPos(this._yPos - 1)}`);
-        cursor.setAttribute("width", `${this._grid.cellSize * 3}`);
-        cursor.setAttribute("height", `${this._grid.cellSize * 3}`);
+        const grid = this._game.grid;
+        cursor.setAttribute("x", `${grid.getXPos(this._xPos - 1)}`);
+        cursor.setAttribute("y", `${grid.getYPos(this._yPos - 1)}`);
+        cursor.setAttribute("width", `${grid.cellSize * 3}`);
+        cursor.setAttribute("height", `${grid.cellSize * 3}`);
         cursor.setAttribute("id", "cursor");
         cursor.setAttribute("class", "cursor");
         cursor.setAttribute("pointer-events", "none");
@@ -34,8 +35,9 @@ export class Cursor {
     }
     _moveCursor() {
         if (this._cursor !== undefined) {
-            this._cursor.setAttribute("x", `${this._grid.getXPos(this._xPos - 1)}`);
-            this._cursor.setAttribute("y", `${this._grid.getYPos(this._yPos - 1)}`);
+            const grid = this._game.grid;
+            this._cursor.setAttribute("x", `${grid.getXPos(this._xPos - 1)}`);
+            this._cursor.setAttribute("y", `${grid.getYPos(this._yPos - 1)}`);
         }
     }
     _subscribe() {
@@ -43,10 +45,11 @@ export class Cursor {
     }
     _onKeyDown(e) {
         const args = e || window.event;
+        const grid = this._game.grid;
         switch (args.key) {
             case "Down":
             case "ArrowDown":
-                if (this._yPos + 1 < this._grid.numRows) {
+                if (this._yPos + 1 < grid.numRows) {
                     this._yPos++;
                 }
                 break;
@@ -64,16 +67,17 @@ export class Cursor {
                 break;
             case "Right":
             case "ArrowRight":
-                if (this._xPos + 1 < this._grid.numCols) {
+                if (this._xPos + 1 < grid.numCols) {
                     this._xPos++;
                 }
                 break;
             case " ":
-                const block = this._grid.getBlock(this._xPos, this._yPos);
+                const block = grid.getBlock(this._xPos, this._yPos);
                 if (block !== undefined) {
                     block.applyHint();
                     // Force change handler to run.
-                    this._grid.setStatus(this._xPos, this._yPos, this._grid.getStatus(this._xPos, this._yPos));
+                    grid.setStatus(this._xPos, this._yPos, grid.getStatus(this._xPos, this._yPos));
+                    this._game.restorePoint();
                 }
                 break;
         }

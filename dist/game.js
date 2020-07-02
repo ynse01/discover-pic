@@ -4,6 +4,7 @@ import { Cursor } from "./cursor.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
 import { Solver } from "./solver.js";
+import { UndoStack } from "./undo-stack.js";
 export class Game {
     constructor(gridId) {
         this._id = gridId;
@@ -23,8 +24,10 @@ export class Game {
         this.loadPuzzle(url, (puzzle) => {
             this._grid = new Grid(width, height, puzzle);
             this.loadSavedGame();
-            new GridView(svg, this._grid, this._onCellClick.bind(this));
-            this._cursor = new Cursor(svg, this._grid);
+            new GridView(svg, this, this._onCellClick.bind(this));
+            this._cursor = new Cursor(svg, this);
+            this._undo = new UndoStack(this._grid);
+            this.restorePoint();
         });
     }
     toggleCursor() {
@@ -36,12 +39,27 @@ export class Game {
         }
         return visibility;
     }
+    get grid() {
+        return this._grid;
+    }
     saveGame() {
         if (this._grid !== undefined) {
             const game = SaveGame.fromGrid(this._grid);
             const json = JSON.stringify(game);
             window.localStorage.setItem(this._grid["name"], json);
         }
+    }
+    restorePoint() {
+        var _a;
+        (_a = this._undo) === null || _a === void 0 ? void 0 : _a.save();
+    }
+    undo() {
+        var _a;
+        (_a = this._undo) === null || _a === void 0 ? void 0 : _a.undo();
+    }
+    redo() {
+        var _a;
+        (_a = this._undo) === null || _a === void 0 ? void 0 : _a.redo();
     }
     check() {
         if (this._grid !== undefined) {

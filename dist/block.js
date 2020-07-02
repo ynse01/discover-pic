@@ -34,31 +34,41 @@ export class Block {
         this._grid = grid;
         this.x = x;
         this.y = y;
-        this.hint = hint;
+        this._hint = hint;
         this.applied = false;
         this.error = false;
     }
+    get hint() {
+        return this._hint;
+    }
     applyHint(force = true) {
-        const stats = this._getStatistics();
-        if (stats.numFull + stats.numUnknown === this.hint) {
-            this._setUnknownCells(CellStatus.Full);
-            this.applied = true;
-        }
-        else if (stats.numFull === this.hint) {
-            this._setUnknownCells(CellStatus.Empty);
-            this.applied = true;
-        }
-        else if (force) {
-            const status = (this.hint > 4) ? CellStatus.Full : CellStatus.Empty;
-            this._setUnknownCells(status);
-            this.applied = true;
+        if (this.hint >= 0) {
+            const stats = this._getStatistics();
+            if (stats.numFull + stats.numUnknown === this.hint) {
+                this.applied = true;
+                this._setUnknownCells(CellStatus.Full);
+            }
+            else if (stats.numFull === this.hint) {
+                this.applied = true;
+                this._setUnknownCells(CellStatus.Empty);
+            }
+            else if (force) {
+                const status = (this.hint > 4) ? CellStatus.Full : CellStatus.Empty;
+                this.applied = true;
+                this._setUnknownCells(status);
+            }
         }
     }
+    toggleHint() {
+        this._hint = -this._hint;
+    }
     checkForError() {
-        const stats = this._getStatistics();
-        const tooMany = stats.numFull > this.hint;
-        const tooLittle = stats.numEmpty > (9 - this.hint);
-        this.error = tooMany || tooLittle;
+        if (this.hint >= 0) {
+            const stats = this._getStatistics();
+            const tooMany = stats.numFull > this.hint;
+            const tooLittle = stats.numEmpty > (9 - this.hint);
+            this.error = tooMany || tooLittle;
+        }
     }
     checkApplied() {
         let isApplied = true;
