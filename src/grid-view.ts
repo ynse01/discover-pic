@@ -75,7 +75,11 @@ export class GridView {
             } else {
                 hint.classList.remove("hintError");
             }
-            hint.textContent = `${block.hint}`;
+            if (block.hint >= 0) {
+                hint.textContent = `${block.hint}`;
+            } else {
+                hint.textContent = " ";
+            }
         }
     }
 

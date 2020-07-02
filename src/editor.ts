@@ -4,6 +4,7 @@ import { IGame } from "./discover.js";
 import { PuzzleGenerator } from "./puzzle-generator.js";
 import { Solver } from "./solver.js";
 import { SaveGame } from "./save-game.js";
+import { BlockIterator } from "./block-iterator.js";
 
 
 export class Editor implements IGame {
@@ -31,7 +32,14 @@ export class Editor implements IGame {
     }
     
     public clear(): void {
-        throw new Error("Method not implemented.");
+        if (this._grid !== undefined) {
+            var iterator = new BlockIterator(this._grid);
+            iterator.forEach(block => {
+                if (block.hint < 0) {
+                    this._onCellClick(block.x, block.y);
+                }
+            });
+        }
     }
     
     public solve(): void {
@@ -59,9 +67,13 @@ export class Editor implements IGame {
         new GridView(svg, this._grid, this._onCellClick.bind(this));
     }
 
-    private _onCellClick(_x: number, _y: number): void {
+    private _onCellClick(x: number, y: number): void {
         if (this._grid !== undefined) {
-            // TODO: Toggle hint
+            var block = this._grid.getBlock(x, y);
+            if (block !== undefined) {
+                block.toggleHint();
+                this._grid.setStatus(x, y, this._grid.getStatus(x, y));
+            }
         }
     }
 }

@@ -35,40 +35,52 @@ export class Block {
     private _grid: Grid;
     public readonly x: number;
     public readonly y: number;
-    public readonly hint: number;
     public applied: boolean;
     public error: boolean;
+    private _hint: number;
     private _neighbors: Block[] | undefined = undefined;
 
     constructor(grid: Grid, x: number, y: number, hint: number) {
         this._grid = grid;
         this.x = x;
         this.y = y;
-        this.hint = hint;
+        this._hint = hint;
         this.applied = false;
         this.error = false;
     }
 
+    public get hint(): number {
+        return this._hint;
+    }
+
     public applyHint(force: boolean = true): void {
-        const stats = this._getStatistics();
-        if (stats.numFull + stats.numUnknown === this.hint) {
-            this._setUnknownCells(CellStatus.Full);
-            this.applied = true;
-        } else if (stats.numFull === this.hint) {
-            this._setUnknownCells(CellStatus.Empty);
-            this.applied = true;
-        } else if (force) {
-            const status = (this.hint > 4) ? CellStatus.Full : CellStatus.Empty;
-            this._setUnknownCells(status);
-            this.applied = true;
+        if (this.hint >= 0) {
+            const stats = this._getStatistics();
+            if (stats.numFull + stats.numUnknown === this.hint) {
+                this.applied = true;
+                this._setUnknownCells(CellStatus.Full);
+            } else if (stats.numFull === this.hint) {
+                this.applied = true;
+                this._setUnknownCells(CellStatus.Empty);
+            } else if (force) {
+                const status = (this.hint > 4) ? CellStatus.Full : CellStatus.Empty;
+                this.applied = true;
+                this._setUnknownCells(status);
+            }
         }
     }
 
+    public toggleHint(): void {
+        this._hint = -this._hint;
+    }
+
     public checkForError(): void {
-        const stats = this._getStatistics();
-        const tooMany = stats.numFull > this.hint;
-        const tooLittle = stats.numEmpty > (9 - this.hint);
-        this.error = tooMany || tooLittle;
+        if (this.hint >= 0) {
+            const stats = this._getStatistics();
+            const tooMany = stats.numFull > this.hint;
+            const tooLittle = stats.numEmpty > (9 - this.hint);
+            this.error = tooMany || tooLittle;
+        }
     }
 
     public checkApplied(): boolean {
