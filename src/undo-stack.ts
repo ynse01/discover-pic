@@ -14,7 +14,6 @@ export class UndoStack {
 
     public save(): void {
         this.index++;
-        console.log(`Restore point index ${this.index}`);
         if (this.stack.length > this.index) {
             // Chop the tail off.
             this.stack = this.stack.slice(0, this.index);
@@ -25,7 +24,6 @@ export class UndoStack {
     public undo(): void {
         if (this.index >= 1) {
             this.index--;
-            console.log(`Undo to index ${this.index} stack length ${this.stack.length}`);
             var saved = this.stack[this.index];
             SaveGame.loadGame(saved, this._grid);
             this.refreshGrid();
@@ -35,7 +33,6 @@ export class UndoStack {
     public redo(): void {
         if (this.index < (this.stack.length - 1)) {
             this.index++;
-            console.log(`Redo to index ${this.index} stack length ${this.stack.length}`);
             var saved = this.stack[this.index];
             SaveGame.loadGame(saved, this._grid);
             this.refreshGrid();
