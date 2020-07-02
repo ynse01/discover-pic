@@ -1,15 +1,15 @@
-import { Grid } from "./grid.js";
 import { GridView } from "./grid-view.js";
+import { IGame } from "./discover.js";
 
 export class Cursor {
     private _cursor: SVGRectElement;
-    private _grid: Grid;
+    private _game: IGame;
     private _visibility: boolean;
     private _xPos: number = 1;
     private _yPos: number = 1;
 
-    constructor(svg: SVGElement, grid: Grid) {
-        this._grid = grid; 
+    constructor(svg: SVGElement, game: IGame) {
+        this._game = game; 
         this._visibility = true;
         this._cursor = this._drawCursor();
         svg.appendChild(this._cursor);
@@ -31,10 +31,11 @@ export class Cursor {
 
     private _drawCursor(): SVGRectElement {
         const cursor = document.createElementNS(GridView.svgNS, "rect");
-        cursor.setAttribute("x", `${this._grid.getXPos(this._xPos - 1)}`);
-        cursor.setAttribute("y", `${this._grid.getYPos(this._yPos - 1)}`);
-        cursor.setAttribute("width", `${this._grid.cellSize * 3}`);
-        cursor.setAttribute("height", `${this._grid.cellSize * 3}`);
+        const grid = this._game.grid;
+        cursor.setAttribute("x", `${grid.getXPos(this._xPos - 1)}`);
+        cursor.setAttribute("y", `${grid.getYPos(this._yPos - 1)}`);
+        cursor.setAttribute("width", `${grid.cellSize * 3}`);
+        cursor.setAttribute("height", `${grid.cellSize * 3}`);
         cursor.setAttribute("id", "cursor");
         cursor.setAttribute("class", "cursor");
         cursor.setAttribute("pointer-events", "none");
@@ -43,8 +44,9 @@ export class Cursor {
 
     private _moveCursor(): void {
         if (this._cursor !== undefined) {
-            this._cursor.setAttribute("x", `${this._grid.getXPos(this._xPos - 1)}`);
-            this._cursor.setAttribute("y", `${this._grid.getYPos(this._yPos - 1)}`);
+            const grid = this._game.grid;
+            this._cursor.setAttribute("x", `${grid.getXPos(this._xPos - 1)}`);
+            this._cursor.setAttribute("y", `${grid.getYPos(this._yPos - 1)}`);
         }
     }
 
@@ -54,10 +56,11 @@ export class Cursor {
 
     private _onKeyDown(e: KeyboardEvent): any {
         const args = e || window.event;
+        const grid = this._game.grid;
         switch(args.key) {
             case "Down":
             case "ArrowDown":
-                if (this._yPos + 1 < this._grid.numRows) {
+                if (this._yPos + 1 < grid.numRows) {
                     this._yPos++;
                 }
                 break;
@@ -75,16 +78,17 @@ export class Cursor {
                 break;
             case "Right":
             case "ArrowRight":
-                if (this._xPos + 1 < this._grid.numCols) {
+                if (this._xPos + 1 < grid.numCols) {
                     this._xPos++;
                 }
                 break;
             case " ":
-                const block = this._grid.getBlock(this._xPos, this._yPos);
+                const block = grid.getBlock(this._xPos, this._yPos);
                 if (block !== undefined) {
                     block.applyHint();
                     // Force change handler to run.
-                    this._grid.setStatus(this._xPos, this._yPos, this._grid.getStatus(this._xPos, this._yPos));
+                    grid.setStatus(this._xPos, this._yPos, grid.getStatus(this._xPos, this._yPos));
+                    this._game.restorePoint();
                 }
                 break;
         }

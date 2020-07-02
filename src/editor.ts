@@ -15,6 +15,10 @@ export class Editor implements IGame {
         this._gridId = gridId;
     }
     
+    public get grid(): Grid {
+        return this._grid!;
+    }
+
     public load(_url: string): void {
         this.generate(45, 35);
     }
@@ -27,6 +31,18 @@ export class Editor implements IGame {
         throw new Error("Method not implemented.");
     }
     
+    public undo(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public restorePoint(): void {
+        throw new Error("Method not implemented.");
+    }
+
+    public redo(): void {
+        throw new Error("Method not implemented.");
+    }
+
     public check(): void {
         throw new Error("Method not implemented.");
     }
@@ -64,7 +80,7 @@ export class Editor implements IGame {
         const puzzle = PuzzleGenerator.saveGame2Puzzle(saveGame);
         this._grid = new Grid(width, height, puzzle);
         SaveGame.loadGame(saveGame, this._grid);
-        new GridView(svg, this._grid, this._onCellClick.bind(this));
+        new GridView(svg, this, this._onCellClick.bind(this));
     }
 
     private _onCellClick(x: number, y: number): void {
@@ -72,6 +88,7 @@ export class Editor implements IGame {
             var block = this._grid.getBlock(x, y);
             if (block !== undefined) {
                 block.toggleHint();
+                // Force change handler to run.
                 this._grid.setStatus(x, y, this._grid.getStatus(x, y));
             }
         }

@@ -1,29 +1,31 @@
-import { CellStatus, Grid } from "./grid.js";
+import { CellStatus } from "./grid.js";
 import { Block } from "./block.js";
+import { IGame } from "./discover.js";
 
 export class GridView {
     private _svg: SVGElement;
-    private _grid: Grid;
+    private _game: IGame;
     private _onCellClickHandler: (x: number, y: number) => void;
 
     public static readonly svgNS = 'http://www.w3.org/2000/svg';
     private static readonly fontSizeFactor = 0.8;
     private static readonly fontBaselineFactor = 0.75;
 
-    constructor(svg: SVGElement, grid: Grid, cellClickHandler: (x: number, y: number) => void) {
+    constructor(svg: SVGElement, game: IGame, cellClickHandler: (x: number, y: number) => void) {
         this._svg = svg;
-        this._grid = grid;
+        this._game = game;
         this._onCellClickHandler = cellClickHandler;
         this.drawGrid();
-        this._grid.registerChangeHandler(this._onCellChanged.bind(this));
+        this._game.grid.registerChangeHandler(this._onCellChanged.bind(this));
     }
 
     private drawGrid(): void {
-        for (let y = 0; y < this._grid.numRows; y++) {
-            for (let x = 0; x < this._grid.numCols; x++) {
+        const grid = this._game.grid;
+        for (let y = 0; y < grid.numRows; y++) {
+            for (let x = 0; x < grid.numCols; x++) {
                 this._drawCell(x, y);
                 this._updateCell(x, y);
-                const block = this._grid.getBlock(x, y);
+                const block = grid.getBlock(x, y);
                 if (block !== undefined) {
                     this._updateBlock(block);
                 }
@@ -37,7 +39,7 @@ export class GridView {
         const crossUp = document.getElementById(`crossup-${x}-${y}`);
         const crossDown = document.getElementById(`crossdown-${x}-${y}`);
         if (rect !== null && hint !== null && crossUp !== null && crossDown !== null) {
-            const status = this._grid.getStatus(x, y);
+            const status = this._game.grid.getStatus(x, y);
             switch(status) {
                 case CellStatus.Empty:
                     rect.setAttribute("class", "cellEmpty");
@@ -84,8 +86,9 @@ export class GridView {
     }
 
     private _drawCell(x: number, y: number): void {
-        const xPos = this._grid.getXPos(x);
-        const yPos = this._grid.getYPos(y);
+        const grid = this._game.grid;
+        const xPos = grid.getXPos(x);
+        const yPos = grid.getYPos(y);
         const rect = this._drawRect(xPos, yPos);
         rect.setAttribute("id", `cell-${x}-${y}`);
         const cross = this._drawCross(xPos, yPos);
@@ -97,10 +100,11 @@ export class GridView {
 
     private _drawRect(xPos: number, yPos: number): SVGRectElement {
         const rect = document.createElementNS(GridView.svgNS, "rect");
+        const grid = this._game.grid;
         rect.setAttribute("x", `${xPos}`);
         rect.setAttribute("y", `${yPos}`);
-        rect.setAttribute("width", `${this._grid.cellSize}`);
-        rect.setAttribute("height", `${this._grid.cellSize}`);
+        rect.setAttribute("width", `${grid.cellSize}`);
+        rect.setAttribute("height", `${grid.cellSize}`);
         rect.setAttribute("class", "cellUnknown");
         rect.onclick = this._onMouseClick.bind(this);
         this._svg.appendChild(rect);
@@ -109,9 +113,10 @@ export class GridView {
 
     private _drawHint(xPos: number, yPos: number): SVGTextElement {
         const text = document.createElementNS(GridView.svgNS, "text");
-        text.setAttribute("x", `${xPos + (this._grid.cellSize / 2)}`);
-        text.setAttribute("y", `${yPos + (this._grid.cellSize * GridView.fontBaselineFactor)}`);
-        text.setAttribute("font-size", `${this._grid.cellSize * GridView.fontSizeFactor}`);
+        const grid = this._game.grid;
+        text.setAttribute("x", `${xPos + (grid.cellSize / 2)}`);
+        text.setAttribute("y", `${yPos + (grid.cellSize * GridView.fontBaselineFactor)}`);
+        text.setAttribute("font-size", `${grid.cellSize * GridView.fontSizeFactor}`);
         text.setAttribute('text-anchor', "middle")
         text.setAttribute("class", "textUnknown");
         text.setAttribute("pointer-events", "none");
@@ -122,19 +127,20 @@ export class GridView {
     }
 
     private _drawCross(xPos: number, yPos: number): SVGLineElement[] {
+        const grid = this._game.grid;
         const down = document.createElementNS(GridView.svgNS, "line");
         down.setAttribute("x1", `${xPos + 2}`);
         down.setAttribute("y1", `${yPos + 2}`);
-        down.setAttribute("x2", `${xPos + this._grid.cellSize - 2}`);
-        down.setAttribute("y2", `${yPos + this._grid.cellSize - 2}`);
+        down.setAttribute("x2", `${xPos + grid.cellSize - 2}`);
+        down.setAttribute("y2", `${yPos + grid.cellSize - 2}`);
         down.setAttribute("class", "crossUnknown");
         down.setAttribute("pointer-events", "none");
         this._svg.appendChild(down);
         const up = document.createElementNS(GridView.svgNS, "line");
-        up.setAttribute("x1", `${xPos + this._grid.cellSize - 2}`);
+        up.setAttribute("x1", `${xPos + grid.cellSize - 2}`);
         up.setAttribute("y1", `${yPos + 2}`);
         up.setAttribute("x2", `${xPos + 2}`);
-        up.setAttribute("y2", `${yPos + this._grid.cellSize - 2}`);
+        up.setAttribute("y2", `${yPos + grid.cellSize - 2}`);
         up.setAttribute("class", "crossUnknown");
         up.setAttribute("pointer-events", "none");
         this._svg.appendChild(up);
@@ -150,6 +156,7 @@ export class GridView {
                 const y = parseInt(parts[2]);
                 if (!isNaN(x) && !isNaN(y)) {
                     this._onCellClickHandler(x, y);
+                    this._game.restorePoint();
                 }
             }
         }
@@ -157,7 +164,7 @@ export class GridView {
 
     private _onCellChanged(x: number, y: number): void {
         this._updateCell(x, y);
-        const block = this._grid.getBlock(x, y);
+        const block = this._game.grid.getBlock(x, y);
         if (block !== undefined) {
             this._updateBlock(block);
         }

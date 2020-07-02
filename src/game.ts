@@ -5,6 +5,7 @@ import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
 import { Solver } from "./solver.js";
 import { IGame } from "./discover.js";
+import { UndoStack } from "./undo-stack.js";
 
 export interface IPuzzle {
     name: string;
@@ -15,7 +16,8 @@ export class Game implements IGame {
     private _id: string;
     private _grid: Grid | undefined;
     private _cursor: Cursor | undefined;
-    
+    private _undo: UndoStack | undefined;
+
     constructor(gridId: string) {
         this._id = gridId;
     }
@@ -35,8 +37,10 @@ export class Game implements IGame {
         this.loadPuzzle(url, (puzzle) => {
             this._grid = new Grid(width, height, <IPuzzle>puzzle);
             this.loadSavedGame();
-            new GridView(svg, this._grid, this._onCellClick.bind(this));
-            this._cursor = new Cursor(svg, this._grid);    
+            new GridView(svg, this, this._onCellClick.bind(this));
+            this._cursor = new Cursor(svg, this);    
+            this._undo = new UndoStack(this._grid);
+            this.restorePoint();
         });
     }
 
@@ -50,12 +54,28 @@ export class Game implements IGame {
         return visibility;
     }
 
+    public get grid(): Grid {
+        return this._grid!;
+    }
+
     public saveGame() {
         if (this._grid !== undefined) {
             const game = SaveGame.fromGrid(this._grid);
             const json = JSON.stringify(game);
             window.localStorage.setItem(this._grid["name"], json);
         }
+    }
+
+    public restorePoint(): void {
+        this._undo?.save();
+    }
+
+    public undo(): void {
+        this._undo?.undo();
+    }
+
+    public redo(): void {
+        this._undo?.redo();
     }
 
     public check(): void {

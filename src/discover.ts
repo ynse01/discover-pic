@@ -1,12 +1,21 @@
 import { Game } from "./game.js";
 import { Editor } from "./editor.js";
+import { Grid } from "./grid.js";
 
 export interface IGame {
+    readonly grid: Grid;
+
     load(url: string): void;
 
     toggleCursor(): boolean;
 
     saveGame(): void;
+
+    restorePoint(): void;
+
+    undo(): void;
+    
+    redo(): void;
 
     check(): void;
 
@@ -36,6 +45,18 @@ export class DiscoverThePicture {
 
     public saveGame(): void {
         this._game.saveGame();
+    }
+
+    public restorePoint(): void {
+        this._game.restorePoint();
+    }
+
+    public undo(): void {
+        this._game.undo();
+    }
+
+    public redo(): void {
+        this._game.redo();
     }
 
     public check(): void {
