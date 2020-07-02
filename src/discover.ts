@@ -1,28 +1,6 @@
 import { Game } from "./game.js";
 import { Editor } from "./editor.js";
-import { Grid } from "./grid.js";
-
-export interface IGame {
-    readonly grid: Grid;
-
-    load(url: string): void;
-
-    toggleCursor(): boolean;
-
-    saveGame(): void;
-
-    restorePoint(): void;
-
-    undo(): void;
-    
-    redo(): void;
-
-    check(): void;
-
-    clear(): void;
-
-    solve(): void;
-}
+import { IGame } from "./i-game.js";
 
 export class DiscoverThePicture {
     private _game: IGame;

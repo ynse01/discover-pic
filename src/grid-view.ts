@@ -1,6 +1,6 @@
 import { CellStatus } from "./grid.js";
 import { Block } from "./block.js";
-import { IGame } from "./discover.js";
+import { IGame } from "./i-game.js";
 
 export class GridView {
     private _svg: SVGElement;

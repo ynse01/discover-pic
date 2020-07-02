@@ -4,7 +4,7 @@ import { Cursor } from "./cursor.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
 import { Solver } from "./solver.js";
-import { IGame } from "./discover.js";
+import { IGame } from "./i-game.js";
 import { UndoStack } from "./undo-stack.js";
 
 export interface IPuzzle {

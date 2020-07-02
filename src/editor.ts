@@ -1,6 +1,6 @@
 import { Grid } from "./grid.js";
 import { GridView } from "./grid-view.js";
-import { IGame } from "./discover.js";
+import { IGame } from "./i-game.js";
 import { PuzzleGenerator } from "./puzzle-generator.js";
 import { Solver } from "./solver.js";
 import { SaveGame } from "./save-game.js";

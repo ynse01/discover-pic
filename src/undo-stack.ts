@@ -2,7 +2,6 @@ import { Grid } from "./grid.js"
 import { SaveGame } from "./save-game.js";
 import { GridIterator } from "./grid-iterator.js";
 
-
 export class UndoStack {
     private _grid: Grid;
     private stack: SaveGame[] = [];

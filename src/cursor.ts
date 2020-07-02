@@ -1,5 +1,5 @@
 import { GridView } from "./grid-view.js";
-import { IGame } from "./discover.js";
+import { IGame } from "./i-game.js";
 
 export class Cursor {
     private _cursor: SVGRectElement;
