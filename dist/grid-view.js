@@ -9,6 +9,12 @@ export class GridView {
     }
     drawGrid() {
         const grid = this._game.grid;
+        const left = grid.getXPos(0);
+        const top = grid.getYPos(0);
+        const right = grid.getXPos(grid.numCols);
+        const bottom = grid.getYPos(grid.numRows);
+        const border = this._drawRect(left, top, right - left, bottom - top);
+        border.setAttribute("class", "border");
         for (let y = 0; y < grid.numRows; y++) {
             for (let x = 0; x < grid.numCols; x++) {
                 this._drawCell(x, y);
@@ -77,7 +83,7 @@ export class GridView {
         const grid = this._game.grid;
         const xPos = grid.getXPos(x);
         const yPos = grid.getYPos(y);
-        const rect = this._drawRect(xPos, yPos);
+        const rect = this._drawRect(xPos, yPos, grid.cellSize, grid.cellSize);
         rect.setAttribute("id", `cell-${x}-${y}`);
         const cross = this._drawCross(xPos, yPos);
         cross[0].setAttribute("id", `crossdown-${x}-${y}`);
@@ -85,13 +91,12 @@ export class GridView {
         const text = this._drawHint(xPos, yPos);
         text.setAttribute("id", `hint-${x}-${y}`);
     }
-    _drawRect(xPos, yPos) {
+    _drawRect(xPos, yPos, width, height) {
         const rect = document.createElementNS(GridView.svgNS, "rect");
-        const grid = this._game.grid;
         rect.setAttribute("x", `${xPos}`);
         rect.setAttribute("y", `${yPos}`);
-        rect.setAttribute("width", `${grid.cellSize}`);
-        rect.setAttribute("height", `${grid.cellSize}`);
+        rect.setAttribute("width", `${width}`);
+        rect.setAttribute("height", `${height}`);
         rect.setAttribute("class", "cellUnknown");
         rect.onclick = this._onMouseClick.bind(this);
         this._svg.appendChild(rect);
@@ -154,6 +159,6 @@ export class GridView {
     }
 }
 GridView.svgNS = 'http://www.w3.org/2000/svg';
-GridView.fontSizeFactor = 0.8;
-GridView.fontBaselineFactor = 0.75;
+GridView.fontSizeFactor = 0.75;
+GridView.fontBaselineFactor = 0.77;
 //# sourceMappingURL=grid-view.js.map

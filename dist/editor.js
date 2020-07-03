@@ -4,6 +4,9 @@ import { PuzzleGenerator } from "./puzzle-generator.js";
 import { Solver } from "./solver.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
+import { SaveHint } from "./save-hint.js";
+import { GridIterator } from "./grid-iterator.js";
+import { MicroIterator } from "./micro-iterator.js";
 export class Editor {
     constructor(gridId) {
         this._gridId = gridId;
@@ -18,19 +21,31 @@ export class Editor {
         throw new Error("Method not implemented.");
     }
     saveGame() {
-        throw new Error("Method not implemented.");
+        if (this._grid !== undefined) {
+            var saved = SaveHint.fromGrid(this._grid);
+            saved.download();
+        }
     }
     undo() {
-        throw new Error("Method not implemented.");
+        // Silently ignore
     }
     restorePoint() {
-        throw new Error("Method not implemented.");
+        // Silently ignore
     }
     redo() {
-        throw new Error("Method not implemented.");
+        // Silently ignore
     }
     check() {
-        throw new Error("Method not implemented.");
+        let errors = 0;
+        if (this._grid !== undefined) {
+            var iterator = new GridIterator(this._grid);
+            iterator.forEach((x, y) => {
+                if (!this._hasBlockCoverage(x, y)) {
+                    errors++;
+                }
+            });
+        }
+        console.log(`${errors} cell(s) don't have a block that influences its state.`);
     }
     clear() {
         if (this._grid !== undefined) {
@@ -74,6 +89,17 @@ export class Editor {
                 this._grid.setStatus(x, y, this._grid.getStatus(x, y));
             }
         }
+    }
+    _hasBlockCoverage(x, y) {
+        var found = false;
+        var iterator = new MicroIterator(x, y);
+        iterator.forEach((x, y) => {
+            if (!found) {
+                const block = this._grid.getBlock(x, y);
+                found = block !== undefined && block.hint >= 0;
+            }
+        });
+        return found;
     }
 }
 //# sourceMappingURL=editor.js.map
