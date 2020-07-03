@@ -5,6 +5,7 @@ import { PuzzleGenerator } from "./puzzle-generator.js";
 import { Solver } from "./solver.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
+import { SaveHint } from "./save-hint.js";
 
 
 export class Editor implements IGame {
@@ -28,7 +29,10 @@ export class Editor implements IGame {
     }
     
     public saveGame(): void {
-        throw new Error("Method not implemented.");
+        if (this._grid !== undefined) {
+            var saved = SaveHint.fromGrid(this._grid);
+            saved.download();
+        }
     }
     
     public undo(): void {
