@@ -6,6 +6,8 @@ import { Solver } from "./solver.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
 import { SaveHint } from "./save-hint.js";
+import { GridIterator } from "./grid-iterator.js";
+import { MicroIterator } from "./micro-iterator.js";
 
 
 export class Editor implements IGame {
@@ -36,19 +38,28 @@ export class Editor implements IGame {
     }
     
     public undo(): void {
-        throw new Error("Method not implemented.");
+        // Silently ignore
     }
 
     public restorePoint(): void {
-        throw new Error("Method not implemented.");
+        // Silently ignore
     }
 
     public redo(): void {
-        throw new Error("Method not implemented.");
+        // Silently ignore
     }
 
     public check(): void {
-        throw new Error("Method not implemented.");
+        let errors = 0;
+        if (this._grid !== undefined) {
+            var iterator = new GridIterator(this._grid);
+            iterator.forEach((x, y) => {
+                if (!this._hasBlockCoverage(x, y)) {
+                    errors++;
+                }
+            });
+        }
+        console.log(`${errors} cell(s) don't have a block that influences its state.`);
     }
     
     public clear(): void {
@@ -96,5 +107,17 @@ export class Editor implements IGame {
                 this._grid.setStatus(x, y, this._grid.getStatus(x, y));
             }
         }
+    }
+
+    private _hasBlockCoverage(x: number, y: number): boolean {
+        var found = false;
+        var iterator = new MicroIterator(x, y);
+        iterator.forEach((x, y) => {
+            if (!found) {
+                const block = this._grid!.getBlock(x, y);
+                found = block !== undefined && block.hint >= 0;
+            }
+        });
+        return found;
     }
 }
