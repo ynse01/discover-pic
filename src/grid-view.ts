@@ -8,8 +8,8 @@ export class GridView {
     private _onCellClickHandler: (x: number, y: number) => void;
 
     public static readonly svgNS = 'http://www.w3.org/2000/svg';
-    private static readonly fontSizeFactor = 0.8;
-    private static readonly fontBaselineFactor = 0.75;
+    private static readonly fontSizeFactor = 0.75;
+    private static readonly fontBaselineFactor = 0.77;
 
     constructor(svg: SVGElement, game: IGame, cellClickHandler: (x: number, y: number) => void) {
         this._svg = svg;
@@ -21,6 +21,12 @@ export class GridView {
 
     private drawGrid(): void {
         const grid = this._game.grid;
+        const left = grid.getXPos(0);
+        const top = grid.getYPos(0);
+        const right = grid.getXPos(grid.numCols);
+        const bottom = grid.getYPos(grid.numRows);
+        const border = this._drawRect(left, top, right - left, bottom - top);
+        border.setAttribute("class", "border");
         for (let y = 0; y < grid.numRows; y++) {
             for (let x = 0; x < grid.numCols; x++) {
                 this._drawCell(x, y);
@@ -89,7 +95,7 @@ export class GridView {
         const grid = this._game.grid;
         const xPos = grid.getXPos(x);
         const yPos = grid.getYPos(y);
-        const rect = this._drawRect(xPos, yPos);
+        const rect = this._drawRect(xPos, yPos, grid.cellSize, grid.cellSize);
         rect.setAttribute("id", `cell-${x}-${y}`);
         const cross = this._drawCross(xPos, yPos);
         cross[0].setAttribute("id", `crossdown-${x}-${y}`);
@@ -98,13 +104,12 @@ export class GridView {
         text.setAttribute("id", `hint-${x}-${y}`);
     }
 
-    private _drawRect(xPos: number, yPos: number): SVGRectElement {
+    private _drawRect(xPos: number, yPos: number, width: number, height: number): SVGRectElement {
         const rect = document.createElementNS(GridView.svgNS, "rect");
-        const grid = this._game.grid;
         rect.setAttribute("x", `${xPos}`);
         rect.setAttribute("y", `${yPos}`);
-        rect.setAttribute("width", `${grid.cellSize}`);
-        rect.setAttribute("height", `${grid.cellSize}`);
+        rect.setAttribute("width", `${width}`);
+        rect.setAttribute("height", `${height}`);
         rect.setAttribute("class", "cellUnknown");
         rect.onclick = this._onMouseClick.bind(this);
         this._svg.appendChild(rect);
