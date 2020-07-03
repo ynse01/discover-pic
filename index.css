@@ -59,7 +59,7 @@
 }
 
 .cursor {
-    stroke: red;
+    stroke: rgb(201, 30, 34);
     stroke-width: 3px;
     fill: transparent;
 }
