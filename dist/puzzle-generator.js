@@ -7,7 +7,7 @@ export class PuzzleGenerator {
         return SaveGame.fromGenerated("New puzzle", content);
     }
     static saveGame2Puzzle(saveGame) {
-        const puzzle = { name: "New puzzle", rows: [] };
+        const puzzle = { name: saveGame.name, rows: [] };
         const columns = saveGame.numCols;
         const rows = saveGame.numRows;
         for (let y = 0; y < rows; y++) {
@@ -19,11 +19,15 @@ export class PuzzleGenerator {
         }
         return puzzle;
     }
+    static getRandomNumbers(count) {
+        let randoms = new Uint8Array(count);
+        randoms = window.crypto.getRandomValues(randoms);
+        return randoms;
+    }
     static _randomContent(content) {
         const columns = content[0].length - 2;
         const rows = content.length - 2;
-        let randoms = new Uint8Array(columns * rows);
-        randoms = window.crypto.getRandomValues(randoms);
+        const randoms = this.getRandomNumbers(columns * rows);
         let i = 0;
         for (let y = 1; y <= rows; y++) {
             for (let x = 1; x <= columns; x++) {
