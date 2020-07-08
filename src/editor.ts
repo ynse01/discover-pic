@@ -13,9 +13,23 @@ import { Block } from "./block.js";
 export class Editor implements IGame {
     private _gridId: string;
     private _grid: Grid | undefined;
+    private _view: GridView;
+    private _width: number;
+    private _height: number;
 
     constructor(gridId: string) {
         this._gridId = gridId;
+        const element = document.getElementById(this._gridId);
+        if (element == null) {
+            throw new Error(`Unable to find SVG element with ID: ${this._gridId}.`);
+        }
+        const svg = <SVGElement><any>element;
+        this._width = (<any>svg)["viewBox"].baseVal.width;
+        this._height = (<any>svg)["viewBox"].baseVal.height;
+        if (this._width == null || this._height == null) {
+            throw new Error(`SVG Element doesn't have a viewBox.`);
+        }
+        this._view = new GridView(svg, this, this._onCellClick.bind(this));
     }
     
     public get grid(): Grid {
@@ -23,7 +37,7 @@ export class Editor implements IGame {
     }
 
     public load(_url: string): void {
-        this.generate(45, 35);
+        // Silently ignore
     }
     
     public toggleCursor(): boolean {
@@ -46,7 +60,7 @@ export class Editor implements IGame {
     }
 
     public redo(): void {
-        // Silently ignore
+        this.generate(45, 35);
     }
 
     public check(): void {
@@ -100,21 +114,11 @@ export class Editor implements IGame {
     }
 
     public generate(columns: number, rows: number): void {
-        const element = document.getElementById(this._gridId);
-        if (element == null) {
-            throw new Error(`Unable to find SVG element with ID: ${this._gridId}.`);
-        }
-        const svg = <SVGElement><any>element;
-        const width: number = (<any>svg)["viewBox"].baseVal.width;
-        const height: number = (<any>svg)["viewBox"].baseVal.height;
-        if (width == null || height == null) {
-            throw new Error(`SVG Element doesn't have a viewBox.`);
-        }
         const saveGame = PuzzleGenerator.generateSaveGame(columns, rows);
         const puzzle = PuzzleGenerator.saveGame2Puzzle(saveGame);
-        this._grid = new Grid(width, height, puzzle);
+        this._grid = new Grid(this._width, this._height, puzzle);
         SaveGame.loadGame(saveGame, this._grid);
-        new GridView(svg, this, this._onCellClick.bind(this));
+        this._view.setGrid(this._grid);
     }
 
     private _onCellClick(x: number, y: number): void {

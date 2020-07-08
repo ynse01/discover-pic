@@ -37,7 +37,8 @@ export class Game implements IGame {
         this.loadPuzzle(url, (puzzle) => {
             this._grid = new Grid(width, height, <IPuzzle>puzzle);
             this.loadSavedGame();
-            new GridView(svg, this, this._onCellClick.bind(this));
+            const view = new GridView(svg, this, this._onCellClick.bind(this));
+            view.setGrid(this._grid);
             this._cursor = new Cursor(svg, this);    
             this._undo = new UndoStack(this._grid);
             this.restorePoint();
