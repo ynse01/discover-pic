@@ -11,7 +11,7 @@ export class PuzzleGenerator {
     }
 
     public static saveGame2Puzzle(saveGame: SaveGame): IPuzzle {
-        const puzzle = <IPuzzle>{ name: "New puzzle", rows: []};
+        const puzzle = <IPuzzle>{ name: saveGame.name, rows: []};
         const columns = saveGame.numCols;
         const rows = saveGame.numRows;
         for (let y = 0; y < rows; y++) {
@@ -25,11 +25,16 @@ export class PuzzleGenerator {
         return puzzle;
     }
 
+    public static getRandomNumbers(count: number): Uint8Array {
+        let randoms = new Uint8Array(count);
+        randoms = window.crypto.getRandomValues(randoms);
+        return randoms;
+    }
+
     private static _randomContent(content: boolean[][]): void {
         const columns = content[0].length - 2;
         const rows = content.length - 2;
-        let randoms = new Uint8Array(columns * rows);
-        randoms = window.crypto.getRandomValues(randoms);
+        const randoms = this.getRandomNumbers(columns * rows);
         let i = 0;
         for (let y = 1; y <= rows; y++) {
             for (let x = 1; x <= columns; x++) {

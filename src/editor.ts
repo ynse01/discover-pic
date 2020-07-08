@@ -2,12 +2,12 @@ import { Grid } from "./grid.js";
 import { GridView } from "./grid-view.js";
 import { IGame } from "./i-game.js";
 import { PuzzleGenerator } from "./puzzle-generator.js";
-import { Solver } from "./solver.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
 import { SaveHint } from "./save-hint.js";
 import { GridIterator } from "./grid-iterator.js";
 import { MicroIterator } from "./micro-iterator.js";
+import { Block } from "./block.js";
 
 
 export class Editor implements IGame {
@@ -75,8 +75,27 @@ export class Editor implements IGame {
     
     public solve(): void {
         if (this._grid !== undefined) {
-            const solver = new Solver(this._grid);
-            solver.solve();
+            const randoms = PuzzleGenerator.getRandomNumbers(this._grid.numCols * this._grid.numRows);
+            let i = 0;
+            for ( let y = 0; y < this._grid.numRows; y++) {
+                for ( let x = 0; x < this._grid.numCols; x++) {
+                    if (randoms[i] > 127) {
+                        const block = this._grid.getBlock(x, y);
+                        if (block !== undefined) {
+                            if (block.hint >= 0) {
+                                block.toggleHint();
+                                if (!this._canBlockBeRemoved(block)) {
+                                    // Oops, shouldn't have removed this block !
+                                    block.toggleHint();
+                                }
+                            }
+
+                        }
+                    }
+                    i++;
+                }
+            }
+            this._updateStatus();
         }
     }
 
@@ -109,6 +128,16 @@ export class Editor implements IGame {
         }
     }
 
+    private _canBlockBeRemoved(block: Block): boolean {
+        var canBeRemoved = true;
+        var iterator = new MicroIterator(block.x, block.y);
+        iterator.forEach((x, y) => {
+            canBeRemoved = canBeRemoved && this._hasBlockCoverage(x, y);
+        });
+        //console.log(`block at (${block.x}, ${block.y}) - ${canBeRemoved}`);
+        return canBeRemoved;
+    }
+
     private _hasBlockCoverage(x: number, y: number): boolean {
         var found = false;
         var iterator = new MicroIterator(x, y);
@@ -118,6 +147,18 @@ export class Editor implements IGame {
                 found = block !== undefined && block.hint >= 0;
             }
         });
+        //if (!found) console.log(`(${x}, ${y}) - ${found}`);
         return found;
+    }
+
+    private _updateStatus(): void {
+        if (this._grid !== undefined) {
+            const iterator = new GridIterator(this._grid);
+            const grid = this._grid;
+            iterator.forEach((x, y) => {
+                // Force change handler to run.
+                grid.setStatus(x, y, grid.getStatus(x, y));
+            });
+        }
     }
 }
