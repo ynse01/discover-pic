@@ -32,8 +32,10 @@ export class EditorClicker extends Clicker {
         }
     }
 
-    protected onStop(_cell: GridCell | undefined): void {
-        // Nothing to do.
+    protected onStop(cell: GridCell | undefined): void {
+        if (cell !== undefined) {
+            this.onContinue(cell);
+        }
     }
     
 }
