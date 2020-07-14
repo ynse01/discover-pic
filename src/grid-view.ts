@@ -2,12 +2,12 @@ import { CellStatus, Grid } from "./grid.js";
 import { Block } from "./block.js";
 import { IGame } from "./i-game.js";
 import { GridCell } from "./grid-cell.js";
+import { Clicker } from "./clicker.js";
 
 export class GridView {
     private _svg: SVGElement;
-    private _game: IGame;
-    private _onCellClickHandler: (cell: GridCell) => void;
     private _grid: Grid | undefined;
+    private _clicker: Clicker;
 
     public static readonly svgNS = 'http://www.w3.org/2000/svg';
     private static readonly fontSizeFactor = 0.75;
@@ -15,8 +15,7 @@ export class GridView {
 
     constructor(svg: SVGElement, game: IGame, cellClickHandler: (cell: GridCell) => void) {
         this._svg = svg;
-        this._game = game;
-        this._onCellClickHandler = cellClickHandler;
+        this._clicker = new Clicker(game, cellClickHandler);
     }
 
     public setGrid(grid: Grid): void {
@@ -129,7 +128,10 @@ export class GridView {
         rect.setAttribute("width", `${width}`);
         rect.setAttribute("height", `${height}`);
         rect.setAttribute("class", "cellUnknown");
-        rect.onclick = this._onMouseClick.bind(this);
+        //rect.onclick = this._onMouseClick.bind(this);
+        rect.onmousedown = this._onMouseDown.bind(this);
+        rect.onmousemove = this._onMouseMove.bind(this);
+        rect.onmouseup = this._onMouseUp.bind(this);
         this._svg.appendChild(rect);
         return rect;
     }
@@ -175,7 +177,28 @@ export class GridView {
         return [];
     }
 
-    private _onMouseClick(e: MouseEvent): any {
+    private _onMouseDown(e: MouseEvent): any {
+        const cell = this._getCellFromEvent(e);
+        if (cell !== undefined) {
+            this._clicker.onMouseDown(cell);
+        }
+    }
+
+    private _onMouseMove(e: MouseEvent): any {
+        const cell = this._getCellFromEvent(e);
+        if (cell !== undefined) {
+            this._clicker.onMouseMove(cell);
+        }
+    }
+
+    private _onMouseUp(e: MouseEvent): any {
+        const cell = this._getCellFromEvent(e);
+        if (cell !== undefined) {
+            this._clicker.onMouseUp(cell);
+        }
+    }
+
+    private _getCellFromEvent(e: MouseEvent): GridCell | undefined {
         const target = e.target as SVGRectElement;
         if (target !== null) {
             const parts = target.id.split("-");
@@ -184,11 +207,11 @@ export class GridView {
                 const y = parseInt(parts[2]);
                 if (!isNaN(x) && !isNaN(y)) {
                     const cell = new GridCell(x, y);
-                    this._onCellClickHandler(cell);
-                    this._game.restorePoint();
+                    return cell;
                 }
             }
         }
+        return undefined
     }
 
     private _onCellChanged(cell: GridCell): void {

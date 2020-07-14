@@ -62,7 +62,7 @@ export class Grid {
     public getStatus(cell: GridCell): CellStatus {
         let status: CellStatus = CellStatus.Empty;
         if (this.inRange(cell)) {
-            const index = (cell.y * this.numCols) + cell.x;
+            const index = cell.getFlatIndex(this.numCols);
             status = this._cells[index];
         }
         return status;
@@ -71,14 +71,14 @@ export class Grid {
     public getBlock(cell: GridCell): Block | undefined {
         let block: Block | undefined = undefined;
         if (this.inRange(cell)) {
-            const index = (cell.y * this.numCols) + cell.x;
+            const index = cell.getFlatIndex(this.numCols);
             block = this._blocks[index];
         }
         return block;
     }
 
     public setStatus(cell: GridCell, value: CellStatus): void {
-        const index = (cell.y * this.numCols) + cell.x;
+        const index = cell.getFlatIndex(this.numCols);
         this._cells[index] = value;
         if (this._cellChangedHandler !== undefined) {
             this._cellChangedHandler(cell);
