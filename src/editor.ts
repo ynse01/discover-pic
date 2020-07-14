@@ -8,6 +8,7 @@ import { SaveHint } from "./save-hint.js";
 import { GridIterator } from "./grid-iterator.js";
 import { MicroIterator } from "./micro-iterator.js";
 import { Block } from "./block.js";
+import { GridCell } from "./grid-cell.js";
 
 
 export class Editor implements IGame {
@@ -67,8 +68,8 @@ export class Editor implements IGame {
         let errors = 0;
         if (this._grid !== undefined) {
             var iterator = new GridIterator(this._grid);
-            iterator.forEach((x, y) => {
-                if (!this._hasBlockCoverage(x, y)) {
+            iterator.forEach((cell) => {
+                if (!this._hasBlockCoverage(cell)) {
                     errors++;
                 }
             });
@@ -81,7 +82,7 @@ export class Editor implements IGame {
             var iterator = new BlockIterator(this._grid);
             iterator.forEach(block => {
                 if (block.hint < 0) {
-                    this._onCellClick(block.x, block.y);
+                    this._onCellClick(block.cell);
                 }
             });
         }
@@ -94,7 +95,8 @@ export class Editor implements IGame {
             for ( let y = 0; y < this._grid.numRows; y++) {
                 for ( let x = 0; x < this._grid.numCols; x++) {
                     if (randoms[i] > 127) {
-                        const block = this._grid.getBlock(x, y);
+                        const cell = new GridCell(x, y);
+                        const block = this._grid.getBlock(cell);
                         if (block !== undefined) {
                             if (block.hint >= 0) {
                                 block.toggleHint();
@@ -121,33 +123,33 @@ export class Editor implements IGame {
         this._view.setGrid(this._grid);
     }
 
-    private _onCellClick(x: number, y: number): void {
+    private _onCellClick(cell: GridCell): void {
         if (this._grid !== undefined) {
-            var block = this._grid.getBlock(x, y);
+            var block = this._grid.getBlock(cell);
             if (block !== undefined) {
                 block.toggleHint();
                 // Force change handler to run.
-                this._grid.setStatus(x, y, this._grid.getStatus(x, y));
+                this._grid.setStatus(cell, this._grid.getStatus(cell));
             }
         }
     }
 
     private _canBlockBeRemoved(block: Block): boolean {
         var canBeRemoved = true;
-        var iterator = new MicroIterator(block.x, block.y);
-        iterator.forEach((x, y) => {
-            canBeRemoved = canBeRemoved && this._hasBlockCoverage(x, y);
+        var iterator = new MicroIterator(block.cell);
+        iterator.forEach((cell) => {
+            canBeRemoved = canBeRemoved && this._hasBlockCoverage(cell);
         });
         //console.log(`block at (${block.x}, ${block.y}) - ${canBeRemoved}`);
         return canBeRemoved;
     }
 
-    private _hasBlockCoverage(x: number, y: number): boolean {
+    private _hasBlockCoverage(cell: GridCell): boolean {
         var found = false;
-        var iterator = new MicroIterator(x, y);
-        iterator.forEach((x, y) => {
+        var iterator = new MicroIterator(cell);
+        iterator.forEach((cell) => {
             if (!found) {
-                const block = this._grid!.getBlock(x, y);
+                const block = this._grid!.getBlock(cell);
                 found = block !== undefined && block.hint >= 0;
             }
         });
@@ -159,9 +161,9 @@ export class Editor implements IGame {
         if (this._grid !== undefined) {
             const iterator = new GridIterator(this._grid);
             const grid = this._grid;
-            iterator.forEach((x, y) => {
+            iterator.forEach((cell) => {
                 // Force change handler to run.
-                grid.setStatus(x, y, grid.getStatus(x, y));
+                grid.setStatus(cell, grid.getStatus(cell));
             });
         }
     }

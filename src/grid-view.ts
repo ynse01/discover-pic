@@ -1,18 +1,19 @@
 import { CellStatus, Grid } from "./grid.js";
 import { Block } from "./block.js";
 import { IGame } from "./i-game.js";
+import { GridCell } from "./grid-cell.js";
 
 export class GridView {
     private _svg: SVGElement;
     private _game: IGame;
-    private _onCellClickHandler: (x: number, y: number) => void;
+    private _onCellClickHandler: (cell: GridCell) => void;
     private _grid: Grid | undefined;
 
     public static readonly svgNS = 'http://www.w3.org/2000/svg';
     private static readonly fontSizeFactor = 0.75;
     private static readonly fontBaselineFactor = 0.77;
 
-    constructor(svg: SVGElement, game: IGame, cellClickHandler: (x: number, y: number) => void) {
+    constructor(svg: SVGElement, game: IGame, cellClickHandler: (cell: GridCell) => void) {
         this._svg = svg;
         this._game = game;
         this._onCellClickHandler = cellClickHandler;
@@ -36,9 +37,10 @@ export class GridView {
             border.setAttribute("class", "border");
             for (let y = 0; y < grid.numRows; y++) {
                 for (let x = 0; x < grid.numCols; x++) {
-                    this._drawCell(x, y);
-                    this._updateCell(x, y);
-                    const block = grid.getBlock(x, y);
+                    const cell = new GridCell(x, y);
+                    this._drawCell(cell);
+                    this._updateCell(cell);
+                    const block = grid.getBlock(cell);
                     if (block !== undefined) {
                         this._updateBlock(block);
                     }
@@ -47,14 +49,16 @@ export class GridView {
         }
     }
 
-    private _updateCell(x: number, y: number) {
+    private _updateCell(cell: GridCell) {
         if (this._grid !== undefined) {
+            const x = cell.x;
+            const y = cell.y;
             const rect = document.getElementById(`cell-${x}-${y}`);
             const hint = document.getElementById(`hint-${x}-${y}`);
             const crossUp = document.getElementById(`crossup-${x}-${y}`);
             const crossDown = document.getElementById(`crossdown-${x}-${y}`);
             if (rect !== null && hint !== null && crossUp !== null && crossDown !== null) {
-                const status = this._grid.getStatus(x, y);
+                const status = this._grid.getStatus(cell);
                 switch(status) {
                     case CellStatus.Empty:
                         rect.setAttribute("class", "cellEmpty");
@@ -81,7 +85,7 @@ export class GridView {
     }
 
     private _updateBlock(block: Block): void {
-        const hint = document.getElementById(`hint-${block.x}-${block.y}`);
+        const hint = document.getElementById(`hint-${block.cell.x}-${block.cell.y}`);
         if (hint != null) {
             if (block.applied) {
                 hint.classList.add("applied");
@@ -101,9 +105,11 @@ export class GridView {
         }
     }
 
-    private _drawCell(x: number, y: number): void {
+    private _drawCell(cell: GridCell): void {
         const grid = this._grid;
         if (grid !== undefined) {
+            const x = cell.x;
+            const y = cell.y;
             const xPos = grid.getXPos(x);
             const yPos = grid.getYPos(y);
             const rect = this._drawRect(xPos, yPos, grid.cellSize, grid.cellSize);
@@ -177,17 +183,18 @@ export class GridView {
                 const x = parseInt(parts[1])
                 const y = parseInt(parts[2]);
                 if (!isNaN(x) && !isNaN(y)) {
-                    this._onCellClickHandler(x, y);
+                    const cell = new GridCell(x, y);
+                    this._onCellClickHandler(cell);
                     this._game.restorePoint();
                 }
             }
         }
     }
 
-    private _onCellChanged(x: number, y: number): void {
+    private _onCellChanged(cell: GridCell): void {
         if (this._grid !== undefined) {
-            this._updateCell(x, y);
-            const block = this._grid.getBlock(x, y);
+            this._updateCell(cell);
+            const block = this._grid.getBlock(cell);
             if (block !== undefined) {
                 this._updateBlock(block);
             }

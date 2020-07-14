@@ -1,6 +1,7 @@
 import { Block } from "./block.js";
 import { CellStatus, Grid } from "./grid.js";
 import { MicroIterator } from "./micro-iterator.js";
+import { GridCell } from "./grid-cell.js";
 
 export class BlockSolutions {
     public readonly block: Block;
@@ -72,11 +73,11 @@ export class BlockSolutions {
     }
 
     public elliminateFromGrid(grid: Grid): void {
-        const iterator = new MicroIterator(this.block.x, this.block.y);
-        iterator.forEach((x: number, y: number) => {
-            const status = grid.getStatus(x, y);
+        const iterator = new MicroIterator(this.block.cell);
+        iterator.forEach((cell) => {
+            const status = grid.getStatus(cell);
             if (status !== CellStatus.Unknown) {
-                this._addConstraint(x, y, status);
+                this._addConstraint(cell, status);
             }
         })
     }
@@ -118,9 +119,9 @@ export class BlockSolutions {
         return solutions;
     }
 
-    private _addConstraint(x: number, y: number, status: CellStatus): void {
+    private _addConstraint(cell: GridCell, status: CellStatus): void {
         if (status !== CellStatus.Unknown) {
-            const bit = ((this.block.y - y) * 3) + (this.block.x - x);
+            const bit = ((this.block.cell.y - cell.y) * 3) + (this.block.cell.x - cell.x);
             const isFilled = (status === CellStatus.Full) ? true : false;
             switch (bit) {
                 case 0: 

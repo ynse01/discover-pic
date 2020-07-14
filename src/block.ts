@@ -1,6 +1,7 @@
 import { Grid, CellStatus } from "./grid.js";
 import { MicroIterator } from "./micro-iterator.js";
 import { NeighborIterator } from "./neighbor-iterator.js";
+import { GridCell } from "./grid-cell.js";
 
 class BlockStatistics {
     public numEmpty: number = 0;
@@ -33,17 +34,15 @@ class BlockStatistics {
 
 export class Block {
     private _grid: Grid;
-    public readonly x: number;
-    public readonly y: number;
+    public readonly cell: GridCell;
     public applied: boolean;
     public error: boolean;
     private _hint: number;
     private _neighbors: Block[] | undefined = undefined;
 
-    constructor(grid: Grid, x: number, y: number, hint: number) {
+    constructor(grid: Grid, cell: GridCell, hint: number) {
         this._grid = grid;
-        this.x = x;
-        this.y = y;
+        this.cell = cell;
         this._hint = hint;
         this.applied = false;
         this.error = false;
@@ -85,9 +84,9 @@ export class Block {
 
     public checkApplied(): boolean {
         let isApplied = true;
-        const iterator = new MicroIterator(this.x, this.y);
-        iterator.forEach((x: number, y: number) => {
-            isApplied = isApplied && (this._grid.getStatus(x, y) !== CellStatus.Unknown);
+        const iterator = new MicroIterator(this.cell);
+        iterator.forEach((cell: GridCell) => {
+            isApplied = isApplied && (this._grid.getStatus(cell) !== CellStatus.Unknown);
         });
         this.applied = isApplied;
         return isApplied;
@@ -96,7 +95,7 @@ export class Block {
     public get neighbors(): Block[] {
         if (this._neighbors === undefined) {
             this._neighbors = [];
-            const iterator = new NeighborIterator(this._grid, this.x, this.y);
+            const iterator = new NeighborIterator(this._grid, this.cell);
             iterator.forEach(block => {
                 this._neighbors!.push(block);
             });
@@ -106,9 +105,9 @@ export class Block {
 
     public getNumberUnknownCells(): number {
         let counter = 0;
-        const iterator = new MicroIterator(this.x, this.y);
-        iterator.forEach((x: number, y: number) => {
-            if (this._grid.getStatus(x, y) === CellStatus.Unknown) {
+        const iterator = new MicroIterator(this.cell);
+        iterator.forEach((cell: GridCell) => {
+            if (this._grid.getStatus(cell) === CellStatus.Unknown) {
                 counter++;
             }
         });
@@ -116,19 +115,19 @@ export class Block {
     }
 
     private _setUnknownCells(status: CellStatus) {
-        const iterator = new MicroIterator(this.x, this.y);
-        iterator.forEach((x: number, y: number) => {
-            if (this._grid.getStatus(x, y) === CellStatus.Unknown) {
-                this._grid.setStatus(x, y, status);
+        const iterator = new MicroIterator(this.cell);
+        iterator.forEach((cell: GridCell) => {
+            if (this._grid.getStatus(cell) === CellStatus.Unknown) {
+                this._grid.setStatus(cell, status);
             }
         });
     }
 
     private _getStatistics(): BlockStatistics {
         const stats = new BlockStatistics();
-        const iterator = new MicroIterator(this.x, this.y);
-        iterator.forEach((x: number, y: number) => {
-            const status = this._grid.getStatus(x, y);
+        const iterator = new MicroIterator(this.cell);
+        iterator.forEach((cell: GridCell) => {
+            const status = this._grid.getStatus(cell);
             stats.add(status);
         });
         stats.finish();

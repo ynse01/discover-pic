@@ -1,17 +1,17 @@
+import { GridCell } from "./grid-cell.js";
 
 export class MicroIterator {
-    public readonly x: number;
-    public readonly y: number;
+    public readonly cell: GridCell;
 
-    constructor(x: number, y: number) {
-        this.x = x;
-        this.y = y;
+    constructor(cell: GridCell) {
+        this.cell = cell;
     }
 
-    public forEach(cb: (x: number, y: number) => void): void {
+    public forEach(cb: (cell: GridCell) => void): void {
         for (let y = -1; y <= 1; y++) {
             for(let x = -1; x <= 1; x++) {
-                cb(this.x + x, this.y + y);
+                const cell = new GridCell(this.cell.x + x, this.cell.y + y);
+                cb(cell);
             }
         }        
     }
