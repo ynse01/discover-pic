@@ -99,9 +99,9 @@ export class Game {
             }
         }
     }
-    _onCellClick(x, y) {
+    _onCellClick(cell) {
         if (this._grid !== undefined) {
-            this._grid.toggleStatus(x, y);
+            this._grid.toggleStatus(cell);
         }
     }
     checkApplied() {

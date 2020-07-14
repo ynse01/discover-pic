@@ -9,11 +9,11 @@ export class BlockSolutions {
         return this._solutions.length;
     }
     elliminateFromGrid(grid) {
-        const iterator = new MicroIterator(this.block.x, this.block.y);
-        iterator.forEach((x, y) => {
-            const status = grid.getStatus(x, y);
+        const iterator = new MicroIterator(this.block.cell);
+        iterator.forEach((cell) => {
+            const status = grid.getStatus(cell);
             if (status !== CellStatus.Unknown) {
-                this._addConstraint(x, y, status);
+                this._addConstraint(cell, status);
             }
         });
     }
@@ -53,9 +53,9 @@ export class BlockSolutions {
         }
         return solutions;
     }
-    _addConstraint(x, y, status) {
+    _addConstraint(cell, status) {
         if (status !== CellStatus.Unknown) {
-            const bit = ((this.block.y - y) * 3) + (this.block.x - x);
+            const bit = ((this.block.cell.y - cell.y) * 3) + (this.block.cell.x - cell.x);
             const isFilled = (status === CellStatus.Full) ? true : false;
             switch (bit) {
                 case 0:

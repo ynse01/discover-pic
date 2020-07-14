@@ -20,7 +20,7 @@ export class Solver {
             this._generateBlockSolutions();
             (_a = this._solutions) === null || _a === void 0 ? void 0 : _a.forEach(solution => {
                 if (solution.count <= 1) {
-                    console.log(`Block at position (${solution.block.x}, ${solution.block.y}) has ${solution.count} solutions left.`);
+                    console.log(`Block at position ${solution.block.cell} has ${solution.count} solutions left.`);
                 }
             });
             this._checkApplied();

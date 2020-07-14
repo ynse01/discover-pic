@@ -10,8 +10,8 @@ export class CommonWithNeighbor {
         });
     }
     _sizeOfOverlap(neighbor) {
-        const xDelta = Math.abs(this._block.x - neighbor.x);
-        const yDelta = Math.abs(this._block.y - neighbor.y);
+        const xDelta = Math.abs(this._block.cell.x - neighbor.cell.x);
+        const yDelta = Math.abs(this._block.cell.y - neighbor.cell.y);
         return CommonWithNeighbor._overlaps[xDelta + (3 * yDelta)];
     }
 }

@@ -1,9 +1,10 @@
 import { CellStatus } from "./grid.js";
+import { GridCell } from "./grid-cell.js";
+import { Clicker } from "./clicker.js";
 export class GridView {
     constructor(svg, game, cellClickHandler) {
         this._svg = svg;
-        this._game = game;
-        this._onCellClickHandler = cellClickHandler;
+        this._clicker = new Clicker(game, cellClickHandler);
     }
     setGrid(grid) {
         this._cleanSvg();
@@ -22,9 +23,10 @@ export class GridView {
             border.setAttribute("class", "border");
             for (let y = 0; y < grid.numRows; y++) {
                 for (let x = 0; x < grid.numCols; x++) {
-                    this._drawCell(x, y);
-                    this._updateCell(x, y);
-                    const block = grid.getBlock(x, y);
+                    const cell = new GridCell(x, y);
+                    this._drawCell(cell);
+                    this._updateCell(cell);
+                    const block = grid.getBlock(cell);
                     if (block !== undefined) {
                         this._updateBlock(block);
                     }
@@ -32,14 +34,16 @@ export class GridView {
             }
         }
     }
-    _updateCell(x, y) {
+    _updateCell(cell) {
         if (this._grid !== undefined) {
+            const x = cell.x;
+            const y = cell.y;
             const rect = document.getElementById(`cell-${x}-${y}`);
             const hint = document.getElementById(`hint-${x}-${y}`);
             const crossUp = document.getElementById(`crossup-${x}-${y}`);
             const crossDown = document.getElementById(`crossdown-${x}-${y}`);
             if (rect !== null && hint !== null && crossUp !== null && crossDown !== null) {
-                const status = this._grid.getStatus(x, y);
+                const status = this._grid.getStatus(cell);
                 switch (status) {
                     case CellStatus.Empty:
                         rect.setAttribute("class", "cellEmpty");
@@ -65,7 +69,7 @@ export class GridView {
         }
     }
     _updateBlock(block) {
-        const hint = document.getElementById(`hint-${block.x}-${block.y}`);
+        const hint = document.getElementById(`hint-${block.cell.x}-${block.cell.y}`);
         if (hint != null) {
             if (block.applied) {
                 hint.classList.add("applied");
@@ -87,9 +91,11 @@ export class GridView {
             }
         }
     }
-    _drawCell(x, y) {
+    _drawCell(cell) {
         const grid = this._grid;
         if (grid !== undefined) {
+            const x = cell.x;
+            const y = cell.y;
             const xPos = grid.getXPos(x);
             const yPos = grid.getYPos(y);
             const rect = this._drawRect(xPos, yPos, grid.cellSize, grid.cellSize);
@@ -108,7 +114,10 @@ export class GridView {
         rect.setAttribute("width", `${width}`);
         rect.setAttribute("height", `${height}`);
         rect.setAttribute("class", "cellUnknown");
-        rect.onclick = this._onMouseClick.bind(this);
+        //rect.onclick = this._onMouseClick.bind(this);
+        rect.onmousedown = this._onMouseDown.bind(this);
+        rect.onmousemove = this._onMouseMove.bind(this);
+        rect.onmouseup = this._onMouseUp.bind(this);
         this._svg.appendChild(rect);
         return rect;
     }
@@ -151,7 +160,25 @@ export class GridView {
         }
         return [];
     }
-    _onMouseClick(e) {
+    _onMouseDown(e) {
+        const cell = this._getCellFromEvent(e);
+        if (cell !== undefined) {
+            this._clicker.onMouseDown(cell);
+        }
+    }
+    _onMouseMove(e) {
+        const cell = this._getCellFromEvent(e);
+        if (cell !== undefined) {
+            this._clicker.onMouseMove(cell);
+        }
+    }
+    _onMouseUp(e) {
+        const cell = this._getCellFromEvent(e);
+        if (cell !== undefined) {
+            this._clicker.onMouseUp(cell);
+        }
+    }
+    _getCellFromEvent(e) {
         const target = e.target;
         if (target !== null) {
             const parts = target.id.split("-");
@@ -159,16 +186,17 @@ export class GridView {
                 const x = parseInt(parts[1]);
                 const y = parseInt(parts[2]);
                 if (!isNaN(x) && !isNaN(y)) {
-                    this._onCellClickHandler(x, y);
-                    this._game.restorePoint();
+                    const cell = new GridCell(x, y);
+                    return cell;
                 }
             }
         }
+        return undefined;
     }
-    _onCellChanged(x, y) {
+    _onCellChanged(cell) {
         if (this._grid !== undefined) {
-            this._updateCell(x, y);
-            const block = this._grid.getBlock(x, y);
+            this._updateCell(cell);
+            const block = this._grid.getBlock(cell);
             if (block !== undefined) {
                 this._updateBlock(block);
             }

@@ -32,9 +32,9 @@ export class UndoStack {
     }
     refreshGrid() {
         var iterator = new GridIterator(this._grid);
-        iterator.forEach((x, y) => {
+        iterator.forEach((cell) => {
             // Force change handler to run.
-            this._grid.setStatus(x, y, this._grid.getStatus(x, y));
+            this._grid.setStatus(cell, this._grid.getStatus(cell));
         });
     }
 }
