@@ -1,10 +1,9 @@
 import { CellStatus } from "./grid.js";
 import { GridCell } from "./grid-cell.js";
-import { Clicker } from "./clicker.js";
 export class GridView {
-    constructor(svg, game, cellClickHandler) {
+    constructor(svg, clicker) {
         this._svg = svg;
-        this._clicker = new Clicker(game, cellClickHandler);
+        this._clicker = clicker;
     }
     setGrid(grid) {
         this._cleanSvg();

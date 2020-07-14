@@ -7,6 +7,7 @@ import { SaveHint } from "./save-hint.js";
 import { GridIterator } from "./grid-iterator.js";
 import { MicroIterator } from "./micro-iterator.js";
 import { GridCell } from "./grid-cell.js";
+import { EditorClicker } from "./editor-clicker.js";
 export class Editor {
     constructor(gridId) {
         this._gridId = gridId;
@@ -20,7 +21,7 @@ export class Editor {
         if (this._width == null || this._height == null) {
             throw new Error(`SVG Element doesn't have a viewBox.`);
         }
-        this._view = new GridView(svg, this, this._onCellClick.bind(this));
+        this._view = new GridView(svg, new EditorClicker(this));
     }
     get grid() {
         return this._grid;

@@ -5,6 +5,7 @@ import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
 import { Solver } from "./solver.js";
 import { UndoStack } from "./undo-stack.js";
+import { GameClicker } from "./game-clicker.js";
 export class Game {
     constructor(gridId) {
         this._id = gridId;
@@ -24,7 +25,7 @@ export class Game {
         this.loadPuzzle(url, (puzzle) => {
             this._grid = new Grid(width, height, puzzle);
             this.loadSavedGame();
-            const view = new GridView(svg, this, this._onCellClick.bind(this));
+            const view = new GridView(svg, new GameClicker(this));
             view.setGrid(this._grid);
             this._cursor = new Cursor(svg, this);
             this._undo = new UndoStack(this._grid);
@@ -97,11 +98,6 @@ export class Game {
                 SaveGame.loadGame(saveGame, this._grid);
                 this.checkApplied();
             }
-        }
-    }
-    _onCellClick(cell) {
-        if (this._grid !== undefined) {
-            this._grid.toggleStatus(cell);
         }
     }
     checkApplied() {
