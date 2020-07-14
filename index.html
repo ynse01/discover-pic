@@ -21,15 +21,15 @@
     </head>
     <body onLoad="init();" class="body">
         <div id="tools" class="toolbar">
-            <i class="tool toolDisabled mi mi-ZoomIn mi-lg" onclick="discover.zoomIn()"></i>
-            <i class="tool toolDisabled mi mi-ZoomOut mi-lg" onclick="discover.zoomOut()"></i>
-            <i class="tool mi mi-Undo mi-lg" onclick="discover.undo()"></i>
-            <i class="tool mi mi-Redo mi-lg" onclick="discover.redo()"></i>
-            <i class="tool mi mi-ViewAll mi-lg" onclick="discover.toggleCursor()"></i>
-            <i class="tool mi mi-Delete mi-lg" onclick="discover.clear()"></i>
-            <i class="tool mi mi-CheckMark mi-lg" onclick="discover.check()"></i>
-            <i class="tool mi mi-View mi-lg" onclick="discover.solve()"></i>
-            <i class="tool mi mi-Save mi-lg" onclick="discover.saveGame()"></i>
+            <i class="tool toolDisabled mi mi-ZoomIn mi-lg" onclick="discover.execute('zoomin')"></i>
+            <i class="tool toolDisabled mi mi-ZoomOut mi-lg" onclick="discover.execute('zoomout')"></i>
+            <i class="tool mi mi-Undo mi-lg" onclick="discover.execute('undo')"></i>
+            <i class="tool mi mi-Redo mi-lg" onclick="discover.execute('redo')"></i>
+            <i class="tool mi mi-ViewAll mi-lg" onclick="discover.execute('cursor')"></i>
+            <i class="tool mi mi-Delete mi-lg" onclick="discover.execute('clear')"></i>
+            <i class="tool mi mi-CheckMark mi-lg" onclick="discover.execute('check')"></i>
+            <i class="tool mi mi-View mi-lg" onclick="discover.execute('solve')"></i>
+            <i class="tool mi mi-Save mi-lg" onclick="discover.execute('save')"></i>
         </div>
         <div id="gameArea">
             <svg id="grid" width="800" height="800" viewBox="0 0 800 800"></svg>

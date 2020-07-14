@@ -17,36 +17,30 @@ export class DiscoverThePicture {
         this._game.load(url);
     }
 
-    public toggleCursor(): boolean {
-        return this._game.toggleCursor();
-    }
-
-    public saveGame(): void {
-        this._game.saveGame();
-    }
-
-    public restorePoint(): void {
-        this._game.restorePoint();
-    }
-
-    public undo(): void {
-        this._game.undo();
-    }
-
-    public redo(): void {
-        this._game.redo();
-    }
-
-    public check(): void {
-        this._game.check();
-    }
-
-    public clear(): void {
-        this._game.clear();
-    }
-
-    public solve(): void {
-        this._game.solve();
+    public execute(command: string): void {
+        switch (command) {
+            case "cursor":
+                this._game.toggleCursor();
+                break;
+            case "save":
+                this._game.saveGame();
+                break;
+            case "undo":
+                this._game.undo();
+                break;
+            case "redo":
+                this._game.redo();
+                break;
+            case "check":
+                this._game.check();
+                break;
+            case "clear":
+                this._game.clear();
+                break;
+            case "solve":
+                this._game.solve();
+                break;
+        }
     }
 }
 // Let HTML page easiliy access this class.
