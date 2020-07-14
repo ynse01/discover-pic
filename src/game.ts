@@ -6,7 +6,7 @@ import { BlockIterator } from "./block-iterator.js";
 import { Solver } from "./solver.js";
 import { IGame } from "./i-game.js";
 import { UndoStack } from "./undo-stack.js";
-import { GridCell } from "./grid-cell.js";
+import { GameClicker } from "./game-clicker.js";
 
 export interface IPuzzle {
     name: string;
@@ -38,7 +38,7 @@ export class Game implements IGame {
         this.loadPuzzle(url, (puzzle) => {
             this._grid = new Grid(width, height, <IPuzzle>puzzle);
             this.loadSavedGame();
-            const view = new GridView(svg, this, this._onCellClick.bind(this));
+            const view = new GridView(svg, new GameClicker(this));
             view.setGrid(this._grid);
             this._cursor = new Cursor(svg, this);    
             this._undo = new UndoStack(this._grid);
@@ -119,12 +119,6 @@ export class Game implements IGame {
                 SaveGame.loadGame(saveGame, this._grid);
                 this.checkApplied();
             }
-        }
-    }
-
-    private _onCellClick(cell: GridCell): void {
-        if (this._grid !== undefined) {
-            this._grid.toggleStatus(cell);
         }
     }
 

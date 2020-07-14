@@ -1,6 +1,5 @@
 import { CellStatus, Grid } from "./grid.js";
 import { Block } from "./block.js";
-import { IGame } from "./i-game.js";
 import { GridCell } from "./grid-cell.js";
 import { Clicker } from "./clicker.js";
 
@@ -13,9 +12,9 @@ export class GridView {
     private static readonly fontSizeFactor = 0.75;
     private static readonly fontBaselineFactor = 0.77;
 
-    constructor(svg: SVGElement, game: IGame, cellClickHandler: (cell: GridCell) => void) {
+    constructor(svg: SVGElement, clicker: Clicker) {
         this._svg = svg;
-        this._clicker = new Clicker(game, cellClickHandler);
+        this._clicker = clicker;
     }
 
     public setGrid(grid: Grid): void {
