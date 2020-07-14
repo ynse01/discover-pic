@@ -43,7 +43,8 @@ export class Editor implements IGame {
     }
     
     public toggleCursor(): boolean {
-        throw new Error("Method not implemented.");
+        // Silently ignore
+        return false;
     }
     
     public saveGame(): void {

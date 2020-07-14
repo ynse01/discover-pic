@@ -5,6 +5,7 @@
         <title>Discover the Picture - Editor</title>
         <link rel="stylesheet" href="dist/micon_nb/css/micon_nb.min.css">
         <link rel="stylesheet" href="index.css">
+        <link rel="stylesheet" href="tooltip.css">
         <script src="dist/discover.js" type="module"></script>
         <script>
             var discover;
@@ -15,15 +16,15 @@
     </head>
     <body onLoad="init();" class="body">
         <div id="tools" class="toolbar">
-            <i class="tool toolDisabled mi mi-ZoomIn mi-lg" onclick="discover.execute('zoomin')"></i>
-            <i class="tool toolDisabled mi mi-ZoomOut mi-lg" onclick="discover.execute('zoomout')"></i>
+            <i class="tool toolDisabled mi mi-ZoomIn mi-lg" onclick="discover.execute('zoomin')"><span class="tooltip">Zoom in</span></i>
+            <i class="tool toolDisabled mi mi-ZoomOut mi-lg" onclick="discover.execute('zoomout')"><span class="tooltip">Zoom in</span></i>
             <i class="tool mi mi-Undo mi-lg" onclick="discover.execute('undo')"></i>
-            <i class="tool mi mi-Redo mi-lg" onclick="discover.execute('redo')"></i>
+            <i class="tool mi mi-Redo mi-lg" onclick="discover.execute('redo')"><span class="tooltip">Generate</span></i>
             <i class="tool mi mi-ViewAll mi-lg" onclick="discover.execute('cursor')"></i>
-            <i class="tool mi mi-Delete mi-lg" onclick="discover.execute('clear')"></i>
-            <i class="tool mi mi-CheckMark mi-lg" onclick="discover.execute('check')"></i>
-            <i class="tool mi mi-View mi-lg" onclick="discover.execute('solve')"></i>
-            <i class="tool mi mi-Save mi-lg" onclick="discover.execute('save')"></i>
+            <i class="tool mi mi-Delete mi-lg" onclick="discover.execute('clear')"><span class="tooltip">Reset</span></i>
+            <i class="tool mi mi-CheckMark mi-lg" onclick="discover.execute('check')"><span class="tooltip">Check</span></i>
+            <i class="tool mi mi-View mi-lg" onclick="discover.execute('solve')"><span class="tooltip">Prune</span></i>
+            <i class="tool mi mi-Save mi-lg" onclick="discover.execute('save')"><span class="tooltip">Download</span></i>
         </div>
         <div id="gameArea">
             <svg id="grid" width="800" height="800" viewBox="0 0 800 800"></svg>
