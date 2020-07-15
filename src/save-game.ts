@@ -54,4 +54,14 @@ export class SaveGame {
         }
         return fits;
     }
+
+    public static getStatus(saveGame: SaveGame, cell: GridCell): CellStatus {
+        if (cell.x >= 0 && cell.x < saveGame.numCols) {
+            if (cell.y >= 0 && cell.y < saveGame.numRows) {
+                const index = cell.getFlatIndex(saveGame.numCols);
+                return saveGame.cells[index];
+            }
+        }
+        return CellStatus.Empty;
+    }
 }
