@@ -30,7 +30,8 @@ export class Editor {
         // Silently ignore
     }
     toggleCursor() {
-        throw new Error("Method not implemented.");
+        // Silently ignore
+        return false;
     }
     saveGame() {
         if (this._grid !== undefined) {

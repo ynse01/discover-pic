@@ -1,5 +1,7 @@
 import { SaveGame } from "./save-game.js";
 import { CellStatus } from "./grid.js";
+import { GridCell } from "./grid-cell.js";
+import { MicroIterator } from "./micro-iterator.js";
 export class PuzzleGenerator {
     static generateSaveGame(columns, rows) {
         const content = PuzzleGenerator._emptyBorder(columns, rows);
@@ -13,7 +15,8 @@ export class PuzzleGenerator {
         for (let y = 0; y < rows; y++) {
             let row = "";
             for (let x = 0; x < columns; x++) {
-                row += PuzzleGenerator._countFilled(saveGame, x, y).toString();
+                const cell = new GridCell(x, y);
+                row += PuzzleGenerator._countFilled(saveGame, cell).toString();
             }
             puzzle.rows[y] = row;
         }
@@ -43,19 +46,14 @@ export class PuzzleGenerator {
         }
         return content;
     }
-    static _countFilled(saveGame, x, y) {
+    static _countFilled(saveGame, cell) {
         const indices = [];
-        const numCols = saveGame.numCols;
-        const offset = y * numCols;
-        indices.push(offset - numCols + x - 1);
-        indices.push(offset - numCols + x);
-        indices.push(offset - numCols + x + 1);
-        indices.push(offset + x - 1);
-        indices.push(offset + x);
-        indices.push(offset + x + 1);
-        indices.push(offset + numCols + x - 1);
-        indices.push(offset + numCols + x);
-        indices.push(offset + numCols + x + 1);
+        const iterator = new MicroIterator(cell);
+        iterator.forEach(cell => {
+            if (SaveGame.getStatus(saveGame, cell) === CellStatus.Full) {
+                indices.push(cell.getFlatIndex(saveGame.numCols));
+            }
+        });
         let count = 0;
         indices.forEach(i => {
             if (saveGame.cells[i] === CellStatus.Full) {

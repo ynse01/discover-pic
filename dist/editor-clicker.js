@@ -26,8 +26,10 @@ export class EditorClicker extends Clicker {
             });
         }
     }
-    onStop(_cell) {
-        // Nothing to do.
+    onStop(cell) {
+        if (cell !== undefined) {
+            this.onContinue(cell);
+        }
     }
 }
 //# sourceMappingURL=editor-clicker.js.map
