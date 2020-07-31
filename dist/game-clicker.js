@@ -1,4 +1,5 @@
 import { Clicker } from "./clicker.js";
+import { MicroIterator } from "./micro-iterator.js";
 export class GameClicker extends Clicker {
     constructor(game) {
         super(game);
@@ -14,7 +15,30 @@ export class GameClicker extends Clicker {
         }
     }
     onStop(_cell) {
-        // Nothing to do
+        // Update applied status.
+        this._updateApplied();
+    }
+    _updateApplied() {
+        const blocks = [];
+        if (this._cells !== undefined) {
+            this._cells.forEach(cell => {
+                const iterator = new MicroIterator(cell);
+                iterator.forEach(neighbor => {
+                    const block = this._game.grid.getBlock(neighbor);
+                    if (block !== undefined && !blocks.includes(block)) {
+                        blocks.push(block);
+                    }
+                });
+            });
+        }
+        blocks.forEach(block => {
+            const previousState = block.applied;
+            const newState = block.checkApplied();
+            if (previousState !== newState) {
+                // Refresh the state
+                this._game.grid.setStatus(block.cell, this._game.grid.getStatus(block.cell));
+            }
+        });
     }
 }
 //# sourceMappingURL=game-clicker.js.map
