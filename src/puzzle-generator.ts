@@ -1,4 +1,4 @@
-import { IPuzzle } from "./game.js";
+import { IPuzzle } from "./i-puzzle.js";
 import { SaveGame } from "./save-game.js";
 import { CellStatus } from "./grid.js";
 import { GridCell } from "./grid-cell.js";

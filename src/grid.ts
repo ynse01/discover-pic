@@ -1,7 +1,7 @@
 import { GridIterator } from "./grid-iterator.js";
 import { Block } from "./block.js";
 import { BlockIterator } from "./block-iterator.js";
-import { IPuzzle } from "./game.js";
+import { IPuzzle } from "./i-puzzle.js";
 import { GridCell } from "./grid-cell.js";
 
 export enum CellStatus {

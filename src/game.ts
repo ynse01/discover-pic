@@ -7,11 +7,7 @@ import { Solver } from "./solver.js";
 import { IGame } from "./i-game.js";
 import { UndoStack } from "./undo-stack.js";
 import { GameClicker } from "./game-clicker.js";
-
-export interface IPuzzle {
-    name: string;
-    rows: string[];
-}
+import { IPuzzle } from "./i-puzzle.js";
 
 export class Game implements IGame {
     private _id: string;
