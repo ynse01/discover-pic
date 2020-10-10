@@ -1,4 +1,4 @@
-import { Grid } from "./grid.js";
+import { CellStatus, Grid } from "./grid.js";
 import { GridView } from "./grid-view.js";
 import { Cursor } from "./cursor.js";
 import { SaveGame } from "./save-game.js";
@@ -8,12 +8,15 @@ import { IGame } from "./i-game.js";
 import { UndoStack } from "./undo-stack.js";
 import { GameClicker } from "./game-clicker.js";
 import { IPuzzle } from "./i-puzzle.js";
+import { PuzzleSolution } from "./puzzle-solution.js";
+import { MicroIterator } from "./micro-iterator.js";
 
 export class Game implements IGame {
     private _id: string;
     private _grid: Grid | undefined;
     private _cursor: Cursor | undefined;
     private _undo: UndoStack | undefined;
+    private _solution: PuzzleSolution | undefined;
 
     constructor(gridId: string) {
         this._id = gridId;
@@ -38,6 +41,7 @@ export class Game implements IGame {
             view.setGrid(this._grid);
             this._cursor = new Cursor(svg, this);    
             this._undo = new UndoStack(this._grid);
+            this._solution = new PuzzleSolution(puzzle);
             this.restorePoint();
         });
     }
@@ -78,7 +82,25 @@ export class Game implements IGame {
 
     public check(): void {
         if (this._grid !== undefined) {
-            this._grid.checkErrors();
+            var iterator = new BlockIterator(this._grid);
+            if (this._solution !== undefined) {
+                iterator.forEach(block => {
+                    if (block.hint >= 0) {
+                        var blockIterator = new MicroIterator(block.cell);
+                        var hasError = false;
+                        blockIterator.forEach(cell => {
+                            var gridStatus = this._grid!.getStatus(cell);
+                            var solutionStatus = this._solution!.getStatus(cell);
+                            hasError = hasError || !this.areAllowedStatuses(gridStatus, solutionStatus);
+                        });
+                        if (hasError) {
+                            block.error = true;
+                            // Refresh the state
+                            this._grid!.setStatus(block.cell, this._grid!.getStatus(block.cell));
+                        }
+                    }
+                });
+            }
         }
     }
 
@@ -125,5 +147,15 @@ export class Game implements IGame {
                 block.checkApplied();
             });
         }
+    }
+
+    private areAllowedStatuses(gridStatus: CellStatus, solutionStatus: CellStatus): boolean {
+        let result = false;
+        if (gridStatus === CellStatus.Unknown) {
+            result = true;
+        } else if (gridStatus === solutionStatus) {
+            result = true;
+        }
+        return result;
     }
 }

@@ -15,13 +15,13 @@ export class Grid {
     public readonly numRows: number;
     public readonly cellSize: number;
     public static readonly padding = 5;
-    private _name: string;
+    private _puzzle: IPuzzle;
     private _cells: CellStatus[];
     private _blocks: (Block | undefined)[];
     private _cellChangedHandler: ((cell: GridCell) => void) | undefined ; 
 
     constructor(width: number, height: number, puzzle: IPuzzle) {
-        this._name = puzzle.name;
+        this._puzzle = puzzle;
         this._cells = [];
         this._blocks = [];
         this.numCols = 0;
@@ -48,7 +48,7 @@ export class Grid {
     }
 
     public get name(): string {
-        return this._name;
+        return this._puzzle.name;
     }
 
     public getXPos(x: number): number {
@@ -101,25 +101,6 @@ export class Grid {
         }
         this.setStatus(cell, newStatus);
         return newStatus;
-    }
-
-    public checkErrors(): number {
-        let numErrors = 0;
-        const iterator = new BlockIterator(this);
-        iterator.forEach(block => {
-            const oldError = block.error;
-            block.checkForError();
-            const newError = block.error;
-            if (oldError !== newError) {
-                // Force cell changed
-                this.setStatus(block.cell, this.getStatus(block.cell));
-            }
-            if (newError) {
-                numErrors++;
-            }
-        });
-        console.log(`Found ${numErrors} errors.`);
-        return numErrors;
     }
 
     public inRange(cell: GridCell): boolean {

@@ -3,6 +3,7 @@ import { SaveGame } from "./save-game.js";
 import { CellStatus } from "./grid.js";
 import { GridCell } from "./grid-cell.js";
 import { MicroIterator } from "./micro-iterator.js";
+import { PuzzleSolution } from "./puzzle-solution.js";
 
 export class PuzzleGenerator {
 
@@ -13,15 +14,20 @@ export class PuzzleGenerator {
     }
 
     public static saveGame2Puzzle(saveGame: SaveGame): IPuzzle {
-        const puzzle = <IPuzzle>{ name: saveGame.name, rows: []};
+        const puzzle = <IPuzzle>{ name: saveGame.name, rows: [], solution: ""};
         const columns = saveGame.numCols;
         const rows = saveGame.numRows;
+        puzzle.solution += PuzzleSolution.encodeHeader(rows, columns);
         for (let y = 0; y < rows; y++) {
             let row = "";
+            let statuses: boolean[] = [];
             for (let x = 0; x < columns; x++) {
                 const cell = new GridCell(x, y);
                 row += PuzzleGenerator._countFilled(saveGame, cell).toString();
+                const current = SaveGame.getStatus(saveGame, cell) === CellStatus.Full;
+                statuses.push(current);
             }
+            puzzle.solution += PuzzleSolution.encodeRow(statuses);
             puzzle.rows[y] = row;
         }
 

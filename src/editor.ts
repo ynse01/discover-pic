@@ -4,17 +4,19 @@ import { IGame } from "./i-game.js";
 import { PuzzleGenerator } from "./puzzle-generator.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
-import { SaveHint } from "./save-hint.js";
+import { SavePuzzle } from "./save-puzzle.js";
 import { GridIterator } from "./grid-iterator.js";
 import { MicroIterator } from "./micro-iterator.js";
 import { Block } from "./block.js";
 import { GridCell } from "./grid-cell.js";
 import { EditorClicker } from "./editor-clicker.js";
+import { IPuzzle } from "./i-puzzle.js";
 
 
 export class Editor implements IGame {
     private _gridId: string;
     private _grid: Grid | undefined;
+    private _puzzle: IPuzzle | undefined;
     private _view: GridView;
     private _width: number;
     private _height: number;
@@ -48,8 +50,8 @@ export class Editor implements IGame {
     }
     
     public saveGame(): void {
-        if (this._grid !== undefined) {
-            var saved = SaveHint.fromGrid(this._grid);
+        if (this._grid !== undefined && this._puzzle !== undefined) {
+            var saved = SavePuzzle.fromGrid(this._grid, this._puzzle);
             saved.download();
         }
     }
@@ -88,7 +90,7 @@ export class Editor implements IGame {
             var cells = new GridIterator(this._grid);
             var grid = this._grid;
             cells.forEach(cell => {
-                grid.setStatus(cell, CellStatus.Unknown);
+                grid.setStatus(cell, CellStatus.Empty);
             });
         }
     }
@@ -122,8 +124,8 @@ export class Editor implements IGame {
 
     public generate(columns: number, rows: number): void {
         const saveGame = PuzzleGenerator.generateSaveGame(columns, rows);
-        const puzzle = PuzzleGenerator.saveGame2Puzzle(saveGame);
-        this._grid = new Grid(this._width, this._height, puzzle);
+        this._puzzle = PuzzleGenerator.saveGame2Puzzle(saveGame);
+        this._grid = new Grid(this._width, this._height, this._puzzle);
         SaveGame.loadGame(saveGame, this._grid);
         this._view.setGrid(this._grid);
     }
