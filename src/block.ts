@@ -73,6 +73,12 @@ export class Block {
         this._hint = -this._hint;
     }
 
+    public clear(): void {
+        this.applied = false;
+        this.error = false;
+        this._hint = -1;
+    }
+
     public checkForError(): void {
         if (this.hint >= 0) {
             const stats = this._getStatistics();

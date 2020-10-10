@@ -1,4 +1,4 @@
-import { Grid } from "./grid.js";
+import { CellStatus, Grid } from "./grid.js";
 import { GridView } from "./grid-view.js";
 import { IGame } from "./i-game.js";
 import { PuzzleGenerator } from "./puzzle-generator.js";
@@ -63,7 +63,7 @@ export class Editor implements IGame {
     }
 
     public redo(): void {
-        this.generate(45, 35);
+        this.generate(30, 40);
     }
 
     public check(): void {
@@ -81,11 +81,14 @@ export class Editor implements IGame {
     
     public clear(): void {
         if (this._grid !== undefined) {
-            var iterator = new BlockIterator(this._grid);
-            iterator.forEach(block => {
-                if (block.hint < 0) {
-                    this._onCellClick(block.cell);
-                }
+            var blocks = new BlockIterator(this._grid);
+            blocks.forEach(block => {
+                block.clear();
+            });
+            var cells = new GridIterator(this._grid);
+            var grid = this._grid;
+            cells.forEach(cell => {
+                grid.setStatus(cell, CellStatus.Unknown);
             });
         }
     }
@@ -123,17 +126,6 @@ export class Editor implements IGame {
         this._grid = new Grid(this._width, this._height, puzzle);
         SaveGame.loadGame(saveGame, this._grid);
         this._view.setGrid(this._grid);
-    }
-
-    private _onCellClick(cell: GridCell): void {
-        if (this._grid !== undefined) {
-            var block = this._grid.getBlock(cell);
-            if (block !== undefined) {
-                block.toggleHint();
-                // Force change handler to run.
-                this._grid.setStatus(cell, this._grid.getStatus(cell));
-            }
-        }
     }
 
     private _canBlockBeRemoved(block: Block): boolean {
