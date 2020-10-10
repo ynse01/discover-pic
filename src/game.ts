@@ -3,13 +3,13 @@ import { GridView } from "./grid-view.js";
 import { Cursor } from "./cursor.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
-import { Solver } from "./solver.js";
 import { IGame } from "./i-game.js";
 import { UndoStack } from "./undo-stack.js";
 import { GameClicker } from "./game-clicker.js";
 import { IPuzzle } from "./i-puzzle.js";
 import { PuzzleSolution } from "./puzzle-solution.js";
 import { MicroIterator } from "./micro-iterator.js";
+import { GridIterator } from "./grid-iterator.js";
 
 export class Game implements IGame {
     private _id: string;
@@ -111,9 +111,14 @@ export class Game implements IGame {
     }
 
     public solve(): void {
-        if (this._grid !== undefined) {
-            const solver = new Solver(this._grid);
-            solver.solve();
+        if (this._grid !== undefined && this._solution !== undefined) {
+            // Override current status with the solution.
+            var gridIterator = new GridIterator(this._grid);
+            gridIterator.forEach(cell => {
+                var solutionStatus = this._solution!.getStatus(cell);
+                this._grid!.setStatus(cell, solutionStatus);
+                console.log(`Setting cell ${cell} to ${solutionStatus}`);
+            });
         }
     }
 
@@ -149,6 +154,7 @@ export class Game implements IGame {
         }
     }
 
+    // Compare the current grid status, with the solution's status.
     private areAllowedStatuses(gridStatus: CellStatus, solutionStatus: CellStatus): boolean {
         let result = false;
         if (gridStatus === CellStatus.Unknown) {

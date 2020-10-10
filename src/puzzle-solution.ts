@@ -17,8 +17,7 @@ export class PuzzleSolution {
     public static encodeRow(statuses: boolean[]): string {
         var result = "";
         const numCols = statuses.length;
-        const end = Math.ceil(numCols / PuzzleSolution._numBits);
-        for (let i = 0; i < end; i += PuzzleSolution._numBits) {
+        for (let i = 0; i < numCols; i += PuzzleSolution._numBits) {
             result += PuzzleSolution._encodeBlock(statuses, i);
         }
         return result;
@@ -41,6 +40,31 @@ export class PuzzleSolution {
         return (result) ? CellStatus.Full : CellStatus.Empty;
     }
 
+    public toString(): string {
+        let result = "";
+        const numRows = this._puzzle.rows.length;
+        const numCols = this._puzzle.rows[0].length;
+        for (let y = 0; y < numRows; y++) {
+            for (let x = 0; x < numCols; x++) {
+                const cell = new GridCell(x, y);
+                const status = this.getStatus(cell);
+                switch (status) {
+                    case CellStatus.Unknown:
+                        result += '!';
+                        break;
+                    case CellStatus.Empty:
+                        result += ' ';
+                        break;
+                    case CellStatus.Full:
+                        result += 'F';
+                        break;
+                }
+            }
+            result += '\n';
+        }
+        return result;
+    }
+
     private static _encodeBlock(statuses:boolean[], start: number): string {
         let result = 0;
         let factor = 1;
@@ -55,9 +79,9 @@ export class PuzzleSolution {
     }
 
     private static _decodeBlock(block: string, charIndex: number, bitIndex: number): boolean {
-        const chr = block.charCodeAt(charIndex);
-        const factor = Math.pow(2, bitIndex + 1);
-        const mask = (chr - 32) % factor;
+        const chr = block.charCodeAt(charIndex + 3);
+        const factor = Math.pow(2, bitIndex);
+        const mask = (chr - 32) % (factor * 2);
         return mask >= factor;
     }
 }
