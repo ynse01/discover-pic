@@ -1,5 +1,5 @@
-import { Clicker } from "./clicker.js";
-import { CellStatus } from "./grid.js";
+import { Clicker } from "../clicker.js";
+import { CellStatus } from "../grid.js";
 export class EditorClicker extends Clicker {
     constructor(game) {
         super(game);

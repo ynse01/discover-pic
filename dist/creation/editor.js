@@ -1,13 +1,15 @@
-import { CellStatus, Grid } from "./grid.js";
-import { GridView } from "./grid-view.js";
+import { CellStatus, Grid } from "../grid.js";
+import { GridView } from "../grid-view.js";
 import { PuzzleGenerator } from "./puzzle-generator.js";
-import { SaveGame } from "./save-game.js";
-import { BlockIterator } from "./block-iterator.js";
-import { SavePuzzle } from "./save-puzzle.js";
-import { GridIterator } from "./grid-iterator.js";
-import { MicroIterator } from "./micro-iterator.js";
-import { GridCell } from "./grid-cell.js";
+import { SaveGame } from "../save-game.js";
+import { BlockIterator } from "../block-iterator.js";
+import { SavePuzzle } from "../save-puzzle.js";
+import { GridIterator } from "../grid-iterator.js";
+import { MicroIterator } from "../micro-iterator.js";
+import { GridCell } from "../grid-cell.js";
 import { EditorClicker } from "./editor-clicker.js";
+import { Cursor } from "../cursor.js";
+import { PuzzleSolution } from "../puzzle-solution.js";
 export class Editor {
     constructor(gridId) {
         this._gridId = gridId;
@@ -104,6 +106,19 @@ export class Editor {
         this._grid = new Grid(this._width, this._height, this._puzzle);
         SaveGame.loadGame(saveGame, this._grid);
         this._view.setGrid(this._grid);
+        const element = document.getElementById(this._gridId);
+        if (element !== null) {
+            const svg = element;
+            new Cursor(svg, this, this._onCursor.bind(this));
+        }
+    }
+    _onCursor(cell) {
+        if (this._grid !== undefined && this._puzzle !== undefined && this._puzzle.solution !== undefined) {
+            const sol = new PuzzleSolution(this._puzzle);
+            sol.toggleStatus(cell);
+            const newStatus = sol.getStatus(cell);
+            this._grid.setStatus(cell, newStatus);
+        }
     }
     _canBlockBeRemoved(block) {
         var canBeRemoved = true;

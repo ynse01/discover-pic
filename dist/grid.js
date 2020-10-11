@@ -10,7 +10,7 @@ export var CellStatus;
 })(CellStatus || (CellStatus = {}));
 export class Grid {
     constructor(width, height, puzzle) {
-        this._name = puzzle.name;
+        this._puzzle = puzzle;
         this._cells = [];
         this._blocks = [];
         this.numCols = 0;
@@ -37,7 +37,7 @@ export class Grid {
         this.cellSize = Math.min(cellWidth, cellHeight);
     }
     get name() {
-        return this._name;
+        return this._puzzle.name;
     }
     getXPos(x) {
         return ((x + 1) * this.cellSize) + Grid.padding;
@@ -84,24 +84,6 @@ export class Grid {
         }
         this.setStatus(cell, newStatus);
         return newStatus;
-    }
-    checkErrors() {
-        let numErrors = 0;
-        const iterator = new BlockIterator(this);
-        iterator.forEach(block => {
-            const oldError = block.error;
-            block.checkForError();
-            const newError = block.error;
-            if (oldError !== newError) {
-                // Force cell changed
-                this.setStatus(block.cell, this.getStatus(block.cell));
-            }
-            if (newError) {
-                numErrors++;
-            }
-        });
-        console.log(`Found ${numErrors} errors.`);
-        return numErrors;
     }
     inRange(cell) {
         return cell.x >= 0 && cell.x < this.numCols && cell.y >= 0 && cell.y < this.numRows;

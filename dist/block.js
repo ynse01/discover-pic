@@ -61,6 +61,11 @@ export class Block {
     toggleHint() {
         this._hint = -this._hint;
     }
+    clear() {
+        this.applied = false;
+        this.error = false;
+        this._hint = -1;
+    }
     checkForError() {
         if (this.hint >= 0) {
             const stats = this._getStatistics();

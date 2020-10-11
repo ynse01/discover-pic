@@ -1,11 +1,13 @@
-import { Grid } from "./grid.js";
+import { CellStatus, Grid } from "./grid.js";
 import { GridView } from "./grid-view.js";
 import { Cursor } from "./cursor.js";
 import { SaveGame } from "./save-game.js";
 import { BlockIterator } from "./block-iterator.js";
-import { Solver } from "./solver.js";
 import { UndoStack } from "./undo-stack.js";
 import { GameClicker } from "./game-clicker.js";
+import { PuzzleSolution } from "./puzzle-solution.js";
+import { MicroIterator } from "./micro-iterator.js";
+import { GridIterator } from "./grid-iterator.js";
 export class Game {
     constructor(gridId) {
         this._id = gridId;
@@ -27,8 +29,9 @@ export class Game {
             this.loadSavedGame();
             const view = new GridView(svg, new GameClicker(this));
             view.setGrid(this._grid);
-            this._cursor = new Cursor(svg, this);
+            this._cursor = new Cursor(svg, this, this._onCursor.bind(this));
             this._undo = new UndoStack(this._grid);
+            this._solution = new PuzzleSolution(puzzle);
             this.restorePoint();
         });
     }
@@ -65,7 +68,27 @@ export class Game {
     }
     check() {
         if (this._grid !== undefined) {
-            this._grid.checkErrors();
+            var iterator = new BlockIterator(this._grid);
+            if (this._solution !== undefined) {
+                iterator.forEach(block => {
+                    if (block.hint >= 0) {
+                        var blockIterator = new MicroIterator(block.cell);
+                        var hasError = false;
+                        blockIterator.forEach(cell => {
+                            if (this._grid.inRange(cell)) {
+                                var gridStatus = this._grid.getStatus(cell);
+                                var solutionStatus = this._solution.getStatus(cell);
+                                hasError = hasError || !this.areAllowedStatuses(gridStatus, solutionStatus);
+                            }
+                        });
+                        if (hasError) {
+                            block.error = true;
+                            // Refresh the state
+                            this._grid.setStatus(block.cell, this._grid.getStatus(block.cell));
+                        }
+                    }
+                });
+            }
         }
     }
     clear() {
@@ -74,9 +97,13 @@ export class Game {
         }
     }
     solve() {
-        if (this._grid !== undefined) {
-            const solver = new Solver(this._grid);
-            solver.solve();
+        if (this._grid !== undefined && this._solution !== undefined) {
+            // Override current status with the solution.
+            var gridIterator = new GridIterator(this._grid);
+            gridIterator.forEach(cell => {
+                var solutionStatus = this._solution.getStatus(cell);
+                this._grid.setStatus(cell, solutionStatus);
+            });
         }
     }
     loadPuzzle(url, cb) {
@@ -89,6 +116,17 @@ export class Game {
             }
         };
         request.send(null);
+    }
+    _onCursor(cell) {
+        if (this._grid !== undefined) {
+            const block = this._grid.getBlock(cell);
+            if (block !== undefined) {
+                block.applyHint();
+                // Force change handler to run.
+                this._grid.setStatus(cell, this._grid.getStatus(cell));
+                this.restorePoint();
+            }
+        }
     }
     loadSavedGame() {
         if (this._grid !== undefined) {
@@ -107,6 +145,17 @@ export class Game {
                 block.checkApplied();
             });
         }
+    }
+    // Compare the current grid status, with the solution's status.
+    areAllowedStatuses(gridStatus, solutionStatus) {
+        let result = false;
+        if (gridStatus === CellStatus.Unknown) {
+            result = true;
+        }
+        else if (gridStatus === solutionStatus) {
+            result = true;
+        }
+        return result;
     }
 }
 //# sourceMappingURL=game.js.map

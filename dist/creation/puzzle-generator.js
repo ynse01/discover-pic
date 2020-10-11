@@ -1,8 +1,8 @@
-import { SaveGame } from "./save-game.js";
-import { CellStatus } from "./grid.js";
-import { GridCell } from "./grid-cell.js";
-import { MicroIterator } from "./micro-iterator.js";
-import { PuzzleSolution } from "./puzzle-solution.js";
+import { SaveGame } from "../save-game.js";
+import { CellStatus } from "../grid.js";
+import { GridCell } from "../grid-cell.js";
+import { MicroIterator } from "../micro-iterator.js";
+import { PuzzleSolution } from "../puzzle-solution.js";
 export class PuzzleGenerator {
     static generateSaveGame(columns, rows) {
         const content = PuzzleGenerator._emptyBorder(columns, rows);

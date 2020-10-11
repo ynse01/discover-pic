@@ -1,5 +1,6 @@
 import { Game } from "./game.js";
-import { Editor } from "./editor.js";
+import { Editor } from "./creation/editor.js";
+import { Thumbnail } from "./thumbnail.js";
 export class DiscoverThePicture {
     constructor(gridId, editMode = false) {
         if (editMode) {
@@ -8,6 +9,19 @@ export class DiscoverThePicture {
         else {
             this._game = new Game(gridId);
         }
+    }
+    static thumbnail(url, cb) {
+        const request = new XMLHttpRequest();
+        request.overrideMimeType("application/json");
+        request.open("GET", url, true);
+        request.onreadystatechange = function () {
+            if (request.readyState === 4 && request.status === 200) {
+                var puzzle = JSON.parse(request.responseText);
+                const thumbnail = new Thumbnail(puzzle);
+                cb(puzzle.name, puzzle.rows[0].length, puzzle.rows.length, thumbnail.toDataURL());
+            }
+        };
+        request.send(null);
     }
     load(url) {
         this._game.load(url);
