@@ -1,16 +1,16 @@
-import { CellStatus, Grid } from "./grid.js";
-import { GridView } from "./grid-view.js";
-import { IGame } from "./i-game.js";
+import { CellStatus, Grid } from "../grid.js";
+import { GridView } from "../grid-view.js";
+import { IGame } from "../i-game.js";
 import { PuzzleGenerator } from "./puzzle-generator.js";
-import { SaveGame } from "./save-game.js";
-import { BlockIterator } from "./block-iterator.js";
-import { SavePuzzle } from "./save-puzzle.js";
-import { GridIterator } from "./grid-iterator.js";
-import { MicroIterator } from "./micro-iterator.js";
-import { Block } from "./block.js";
-import { GridCell } from "./grid-cell.js";
+import { SaveGame } from "../save-game.js";
+import { BlockIterator } from "../block-iterator.js";
+import { SavePuzzle } from "../save-puzzle.js";
+import { GridIterator } from "../grid-iterator.js";
+import { MicroIterator } from "../micro-iterator.js";
+import { Block } from "../block.js";
+import { GridCell } from "../grid-cell.js";
 import { EditorClicker } from "./editor-clicker.js";
-import { IPuzzle } from "./i-puzzle.js";
+import { IPuzzle } from "../i-puzzle.js";
 
 
 export class Editor implements IGame {

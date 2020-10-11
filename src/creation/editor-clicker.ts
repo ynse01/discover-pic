@@ -1,7 +1,7 @@
-import { Clicker } from "./clicker.js";
-import { GridCell } from "./grid-cell.js";
-import { CellStatus } from "./grid.js";
-import { IGame } from "./i-game.js";
+import { Clicker } from "../clicker.js";
+import { GridCell } from "../grid-cell.js";
+import { CellStatus } from "../grid.js";
+import { IGame } from "../i-game.js";
 
 export class EditorClicker extends Clicker {
     private appliedStatus: CellStatus = CellStatus.Unknown;

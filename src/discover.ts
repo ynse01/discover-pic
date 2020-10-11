@@ -1,5 +1,5 @@
 import { Game } from "./game.js";
-import { Editor } from "./editor.js";
+import { Editor } from "./creation/editor.js";
 import { IGame } from "./i-game.js";
 
 export class DiscoverThePicture {
