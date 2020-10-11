@@ -7,9 +7,11 @@ export class Cursor {
     private _game: IGame;
     private _visibility: boolean;
     private _cell = new GridCell(1, 1);
+    private _cb: (cell: GridCell) => void;
 
-    constructor(svg: SVGElement, game: IGame) {
+    constructor(svg: SVGElement, game: IGame, cb: (cell: GridCell) => void) {
         this._game = game; 
+        this._cb = cb;
         this._visibility = true;
         this._cursor = this._drawCursor();
         svg.appendChild(this._cursor);
@@ -78,18 +80,12 @@ export class Cursor {
                 break;
             case "Right":
             case "ArrowRight":
-                if (this._cell.y + 1 < grid.numCols) {
+                if (this._cell.x + 1 < grid.numCols) {
                     this._cell = this._cell.add(1, 0);
                 }
                 break;
             case " ":
-                const block = grid.getBlock(this._cell);
-                if (block !== undefined) {
-                    block.applyHint();
-                    // Force change handler to run.
-                    grid.setStatus(this._cell, grid.getStatus(this._cell));
-                    this._game.restorePoint();
-                }
+                this._cb(this._cell);
                 break;
         }
         this._moveCursor();

@@ -10,6 +10,7 @@ import { IPuzzle } from "./i-puzzle.js";
 import { PuzzleSolution } from "./puzzle-solution.js";
 import { MicroIterator } from "./micro-iterator.js";
 import { GridIterator } from "./grid-iterator.js";
+import { GridCell } from "./grid-cell.js";
 
 export class Game implements IGame {
     private _id: string;
@@ -39,7 +40,7 @@ export class Game implements IGame {
             this.loadSavedGame();
             const view = new GridView(svg, new GameClicker(this));
             view.setGrid(this._grid);
-            this._cursor = new Cursor(svg, this);    
+            this._cursor = new Cursor(svg, this, this._onCursor.bind(this));
             this._undo = new UndoStack(this._grid);
             this._solution = new PuzzleSolution(puzzle);
             this.restorePoint();
@@ -133,6 +134,18 @@ export class Game implements IGame {
             }
         }
         request.send(null);
+    }
+
+    private _onCursor(cell: GridCell): void {
+        if (this._grid !== undefined) {
+            const block = this._grid.getBlock(cell);
+            if (block !== undefined) {
+                block.applyHint();
+                // Force change handler to run.
+                this._grid.setStatus(cell, this._grid.getStatus(cell));
+                this.restorePoint();
+            }
+        }
     }
 
     private loadSavedGame(): void {

@@ -11,6 +11,8 @@ import { Block } from "../block.js";
 import { GridCell } from "../grid-cell.js";
 import { EditorClicker } from "./editor-clicker.js";
 import { IPuzzle } from "../i-puzzle.js";
+import { Cursor } from "../cursor.js";
+import { PuzzleSolution } from "../puzzle-solution.js";
 
 
 export class Editor implements IGame {
@@ -128,6 +130,20 @@ export class Editor implements IGame {
         this._grid = new Grid(this._width, this._height, this._puzzle);
         SaveGame.loadGame(saveGame, this._grid);
         this._view.setGrid(this._grid);
+        const element = document.getElementById(this._gridId);
+        if (element !== null) {
+            const svg = <SVGElement><any>element;
+            new Cursor(svg, this, this._onCursor.bind(this));
+        }
+    }
+
+    private _onCursor(cell: GridCell): void {
+        if (this._grid !== undefined && this._puzzle !== undefined && this._puzzle.solution !== undefined) {
+            const sol = new PuzzleSolution(this._puzzle);
+            sol.toggleStatus(cell);
+            const newStatus = sol.getStatus(cell);
+            this._grid.setStatus(cell, newStatus);
+        }
     }
 
     private _canBlockBeRemoved(block: Block): boolean {

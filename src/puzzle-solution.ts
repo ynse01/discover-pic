@@ -31,13 +31,19 @@ export class PuzzleSolution {
         if (this._puzzle.solution === undefined) {
             return CellStatus.Unknown;
         }
-        const numCols = this._puzzle.rows[0].length;
-        const stride = Math.ceil(numCols / PuzzleSolution._numBits);
-        const offset = Math.floor(cell.x / PuzzleSolution._numBits);
-        const charIndex = (stride * cell.y) + offset;
-        const bitIndex = cell.x % PuzzleSolution._numBits;
-        const result = PuzzleSolution._decodeBlock(this._puzzle.solution, charIndex, bitIndex);
+        const charIndex = this._getCharIndex(cell);
+        const bitIndex = this._getBitIndex(cell);
+        const result = this._decodeCell(charIndex, bitIndex);
         return (result) ? CellStatus.Full : CellStatus.Empty;
+    }
+
+    public toggleStatus(cell: GridCell): void {
+        if (this._puzzle.solution === undefined) {
+            return;
+        }
+        const charIndex = this._getCharIndex(cell);
+        const bitIndex = this._getBitIndex(cell);
+        this._toggleBit(charIndex, bitIndex);
     }
 
     public toString(): string {
@@ -78,11 +84,36 @@ export class PuzzleSolution {
         return String.fromCharCode(result + 32);
     }
 
-    private static _decodeBlock(block: string, charIndex: number, bitIndex: number): boolean {
+    private _decodeCell(charIndex: number, bitIndex: number): boolean {
+        const block = this._puzzle.solution!;
         const chr = block.charCodeAt(charIndex + 3);
         const powIndex = PuzzleSolution._numBits - bitIndex;
         const factor = Math.pow(2, powIndex);
         const mask = (chr - 32) % (factor * 2);
         return mask >= factor;
+    }
+
+    private _toggleBit(charIndex: number, bitIndex: number): void {
+        let factor = (this._decodeCell(charIndex, bitIndex)) ? -1: 1;
+        const powIndex = PuzzleSolution._numBits - bitIndex;
+        let mask = Math.pow(2, powIndex);
+        const chr = this._puzzle.solution!.charCodeAt(charIndex + 3) + (mask * factor);
+        this._puzzle.solution = this._replaceInString(this._puzzle.solution!, charIndex + 3, chr);
+    }
+
+    private _getCharIndex(cell: GridCell): number {
+        const numCols = this._puzzle.rows[0].length;
+        const stride = Math.ceil(numCols / PuzzleSolution._numBits);
+        const offset = Math.floor(cell.x / PuzzleSolution._numBits);
+        const charIndex = (stride * cell.y) + offset;
+        return charIndex;
+    }
+    
+    private _getBitIndex(cell: GridCell): number {
+            return  cell.x % PuzzleSolution._numBits;
+    }
+
+    private _replaceInString(str: string, index: number, chr: number): string {
+        return str.substr(0, index) + String.fromCharCode(chr) + str.substr(index + 1);
     }
 }
