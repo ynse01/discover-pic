@@ -80,7 +80,8 @@ export class PuzzleSolution {
 
     private static _decodeBlock(block: string, charIndex: number, bitIndex: number): boolean {
         const chr = block.charCodeAt(charIndex + 3);
-        const factor = Math.pow(2, bitIndex);
+        const powIndex = PuzzleSolution._numBits - bitIndex;
+        const factor = Math.pow(2, powIndex);
         const mask = (chr - 32) % (factor * 2);
         return mask >= factor;
     }

@@ -89,9 +89,11 @@ export class Game implements IGame {
                         var blockIterator = new MicroIterator(block.cell);
                         var hasError = false;
                         blockIterator.forEach(cell => {
-                            var gridStatus = this._grid!.getStatus(cell);
-                            var solutionStatus = this._solution!.getStatus(cell);
-                            hasError = hasError || !this.areAllowedStatuses(gridStatus, solutionStatus);
+                            if (this._grid!.inRange(cell)) {
+                                var gridStatus = this._grid!.getStatus(cell);
+                                var solutionStatus = this._solution!.getStatus(cell);
+                                hasError = hasError || !this.areAllowedStatuses(gridStatus, solutionStatus);
+                            }
                         });
                         if (hasError) {
                             block.error = true;
@@ -117,7 +119,6 @@ export class Game implements IGame {
             gridIterator.forEach(cell => {
                 var solutionStatus = this._solution!.getStatus(cell);
                 this._grid!.setStatus(cell, solutionStatus);
-                console.log(`Setting cell ${cell} to ${solutionStatus}`);
             });
         }
     }
