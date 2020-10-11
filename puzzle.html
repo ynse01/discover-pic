@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Discover the Picture</title>
+        <link rel="stylesheet" href="dist/micon_nb/css/micon_nb.min.css">
+        <link rel="stylesheet" href="index.css">
+        <link rel="stylesheet" href="tooltip.css">
+        <script src="dist/discover.js" type="module"></script>
+        <script>
+            var discover;
+            function init() {
+                var puzzle = "first";
+                var query = window.location.search;
+                if (!!query) {
+                    puzzle = query.substring(1);
+                }
+                discover = new DiscoverThePicture("grid");
+                discover.load("./puzzles/" + puzzle + ".json");
+            }
+        </script>
+    </head>
+    <body onLoad="init();" class="body">
+        <div id="tools" class="toolbar">
+            <i class="tool toolDisabled mi mi-ZoomIn mi-lg" onclick="discover.execute('zoomin')"><span class="tooltip">Zoom in</span></i>
+            <i class="tool toolDisabled mi mi-ZoomOut mi-lg" onclick="discover.execute('zoomout')"><span class="tooltip">Zoom out</span></i>
+            <i class="tool mi mi-Undo mi-lg" onclick="discover.execute('undo')"><span class="tooltip">Undo</span></i>
+            <i class="tool mi mi-Redo mi-lg" onclick="discover.execute('redo')"><span class="tooltip">Redo</span></i>
+            <i class="tool mi mi-ViewAll mi-lg" onclick="discover.execute('cursor')"><span class="tooltip">Cursor</span></i>
+            <i class="tool mi mi-Delete mi-lg" onclick="discover.execute('clear')"><span class="tooltip">Clear</span></i>
+            <i class="tool mi mi-CheckMark mi-lg" onclick="discover.execute('check')"><span class="tooltip">Check</span></i>
+            <i class="tool mi mi-View mi-lg" onclick="discover.execute('solve')"><span class="tooltip">Solve</span></i>
+            <i class="tool mi mi-Save mi-lg" onclick="discover.execute('save')"><span class="tooltip">Save</span></i>
+        </div>
+        <div id="gameArea">
+            <svg id="grid" width="800" height="800" viewBox="0 0 800 800"></svg>
+        </div>
+    </body>
+</html>
