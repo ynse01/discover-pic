@@ -23,6 +23,8 @@ export class Editor implements IGame {
     private _width: number;
     private _height: number;
 
+    private static MinimumHintsPerBlock = 2;
+
     constructor(gridId: string) {
         this._gridId = gridId;
         const element = document.getElementById(this._gridId);
@@ -111,23 +113,29 @@ export class Editor implements IGame {
             for ( let y = 0; y < this._grid.numRows; y++) {
                 for ( let x = 0; x < this._grid.numCols; x++) {
                     if (randoms[i] > 127) {
-                        const cell = new GridCell(x, y);
-                        const block = this._grid.getBlock(cell);
-                        if (block !== undefined) {
-                            if (block.hint >= 0) {
-                                block.toggleHint();
-                                if (!this._canBlockBeRemoved(block)) {
-                                    // Oops, shouldn't have removed this block !
-                                    block.toggleHint();
-                                }
-                            }
-
-                        }
+                        this._pruneCell(x, y);
                     }
                     i++;
                 }
             }
+            for ( let y = 0; y < this._grid.numRows; y++) {
+                for ( let x = 0; x < this._grid.numCols; x++) {
+                    this._pruneCell(x, y);
+                }
+            }
             this._updateStatus();
+        }
+    }
+
+    private _pruneCell(x: number, y: number): void {
+        const cell = new GridCell(x, y);
+        const block = this._grid!.getBlock(cell);
+        if ((block !== undefined) && (block.hint >= 0)) {
+            block.toggleHint();
+            if (!this._canBlockBeRemoved(block)) {
+                // Oops, shouldn't have removed this block !
+                block.toggleHint();
+            }
         }
     }
 
@@ -154,8 +162,8 @@ export class Editor implements IGame {
     }
 
     private _canBlockBeRemoved(block: Block): boolean {
-        var canBeRemoved = true;
-        var iterator = new MicroIterator(block.cell);
+        let canBeRemoved = true;
+        const iterator = new MicroIterator(block.cell);
         iterator.forEach((cell) => {
             canBeRemoved = canBeRemoved && this._hasBlockCoverage(cell);
         });
@@ -164,16 +172,16 @@ export class Editor implements IGame {
     }
 
     private _hasBlockCoverage(cell: GridCell): boolean {
-        var found = false;
-        var iterator = new MicroIterator(cell);
+        let found = 0;
+        const iterator = new MicroIterator(cell);
         iterator.forEach((cell) => {
-            if (!found) {
-                const block = this._grid!.getBlock(cell);
-                found = block !== undefined && block.hint >= 0;
+            const block = this._grid!.getBlock(cell);
+            if (block !== undefined && block.hint >= 0) {
+                found++;
             }
         });
         //if (!found) console.log(`(${x}, ${y}) - ${found}`);
-        return found;
+        return (found >= Editor.MinimumHintsPerBlock);
     }
 
     private _updateStatus(): void {
