@@ -127,18 +127,6 @@ export class Editor implements IGame {
         }
     }
 
-    private _pruneCell(x: number, y: number): void {
-        const cell = new GridCell(x, y);
-        const block = this._grid!.getBlock(cell);
-        if ((block !== undefined) && (block.hint >= 0)) {
-            block.toggleHint();
-            if (!this._canBlockBeRemoved(block)) {
-                // Oops, shouldn't have removed this block !
-                block.toggleHint();
-            }
-        }
-    }
-
     public generate(columns: number, rows: number): void {
         const saveGame = PuzzleGenerator.generateSaveGame(columns, rows);
         this._puzzle = PuzzleGenerator.saveGame2Puzzle(saveGame);
@@ -161,6 +149,18 @@ export class Editor implements IGame {
         }
     }
 
+    private _pruneCell(x: number, y: number): void {
+        const cell = new GridCell(x, y);
+        const block = this._grid!.getBlock(cell);
+        if (this._blockHasHint(block)) {
+            block!.toggleHint();
+            if (!this._canBlockBeRemoved(block!)) {
+                // Oops, shouldn't have removed this block !
+                block!.toggleHint();
+            }
+        }
+    }
+
     private _canBlockBeRemoved(block: Block): boolean {
         let canBeRemoved = true;
         const iterator = new MicroIterator(block.cell);
@@ -176,12 +176,16 @@ export class Editor implements IGame {
         const iterator = new MicroIterator(cell);
         iterator.forEach((cell) => {
             const block = this._grid!.getBlock(cell);
-            if (block !== undefined && block.hint >= 0) {
+            if (this._blockHasHint(block)) {
                 found++;
             }
         });
         //if (!found) console.log(`(${x}, ${y}) - ${found}`);
         return (found >= Editor.MinimumHintsPerBlock);
+    }
+
+    private _blockHasHint(block: Block | undefined): boolean {
+        return (block !== undefined && block.hint >= 0);
     }
 
     private _updateStatus(): void {
