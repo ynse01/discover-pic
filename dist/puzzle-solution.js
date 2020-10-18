@@ -75,7 +75,7 @@ export class PuzzleSolution {
     _decodeCell(charIndex, bitIndex) {
         const block = this._puzzle.solution;
         const chr = block.charCodeAt(charIndex + 3);
-        const powIndex = PuzzleSolution._numBits - bitIndex;
+        const powIndex = PuzzleSolution._numBits - bitIndex - 1;
         const factor = Math.pow(2, powIndex);
         const mask = (chr - 32) % (factor * 2);
         return mask >= factor;
