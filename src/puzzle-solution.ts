@@ -46,6 +46,18 @@ export class PuzzleSolution {
         this._toggleBit(charIndex, bitIndex);
     }
 
+    public test(charIndex: number, bitIndex: number): boolean {
+        const original = this._decodeCell(charIndex, bitIndex);
+        this._toggleBit(charIndex, bitIndex);
+        const flipped = this._decodeCell(charIndex, bitIndex);
+        if (original !== flipped) {
+            this._toggleBit(charIndex, bitIndex);
+            const back = this._decodeCell(charIndex, bitIndex);
+            return (original === back);
+        }
+        return false;
+    }
+
     public toString(): string {
         let result = "";
         const numRows = this._puzzle.rows.length;
@@ -74,28 +86,29 @@ export class PuzzleSolution {
     private static _encodeBlock(statuses:boolean[], start: number): string {
         let result = 0;
         let factor = 1;
-        const end = Math.min(PuzzleSolution._numBits, statuses.length - start);
-        for(let i = 0; i < end; i++) {
-            if (statuses[start + i]) {
+        const end = Math.min(PuzzleSolution._numBits + start, statuses.length);
+        for(let i = start; i < end; i++) {
+            if (statuses[i]) {
                 result += factor;
             }
             factor *= 2;
         }
-        return String.fromCharCode(result + 32);
+        const code = String.fromCharCode(result + 32);
+        return code;
     }
 
     private _decodeCell(charIndex: number, bitIndex: number): boolean {
         const block = this._puzzle.solution!;
         const chr = block.charCodeAt(charIndex + 3);
-        const powIndex = PuzzleSolution._numBits - bitIndex - 1;
-        const factor = Math.pow(2, powIndex);
+        const factor = Math.pow(2, bitIndex);
         const mask = (chr - 32) % (factor * 2);
-        return mask >= factor;
+        const isSet = mask >= factor;
+        return isSet;
     }
 
     private _toggleBit(charIndex: number, bitIndex: number): void {
         let factor = (this._decodeCell(charIndex, bitIndex)) ? -1: 1;
-        const powIndex = PuzzleSolution._numBits - bitIndex;
+        const powIndex = bitIndex;
         let mask = Math.pow(2, powIndex);
         const chr = this._puzzle.solution!.charCodeAt(charIndex + 3) + (mask * factor);
         this._puzzle.solution = this._replaceInString(this._puzzle.solution!, charIndex + 3, chr);

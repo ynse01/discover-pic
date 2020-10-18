@@ -59,7 +59,14 @@ export class Editor implements IGame {
     }
     
     public undo(): void {
-        // Silently ignore
+        if (this._puzzle !== undefined) {
+            const solution = new PuzzleSolution(this._puzzle);
+            for (let i = 0; i < this._puzzle.solution!.length - 3; i++) {
+                if (!solution.test(i, 0)) {
+                    alert("Test failed");
+                }
+            }
+        }
     }
 
     public restorePoint(): void {
